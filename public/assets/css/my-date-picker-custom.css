@@ -1,0 +1,154 @@
+:root {
+    /* Date-picker (dp) */
+    --dp-bg-color: #272930;
+    --dp-text-color: rgb(191, 191, 191);
+    --dp-old-new-date-color: rgb(80, 80, 80);
+
+    --dp-shadow-color: #1b1c22;
+
+    --dp-active-bg-color: rgba(0, 210, 91, 0.2);
+    --dp-active-text-color: #00873a;
+
+    --dp-hover-color: #23252e;
+    --dp-hover-text-color: #fff;
+    --dp-switch-menu-bg-color: #23252e;
+    --dp-month-year-hover-focused-color: #23252e;
+
+    --dp-highlighted-bg-color: rgb(43, 45, 50);
+    --dp-highlighted-text-color: rgb(147, 49, 49);
+
+}
+
+.datepicker.datepicker-dropdown,
+.datepicker.datepicker-inline {
+    padding: 10px;
+    color: var(--dp-text-color);
+    background-color: var(--dp-bg-color);
+    box-shadow: 0 0 8px 3px var(--dp-shadow-color);
+    border: none;
+    transition: all 0.35s ease-in-out;
+}
+
+/* Date-picker main layout (table) */
+.table-condensed {
+    width: 100%;
+}
+
+@media screen and (min-width: 679px) {
+
+    .datepicker.datepicker-dropdown,
+    .datepicker.datepicker-inline {
+        width: 100%;
+        max-width: 550px;
+        min-width: 250px;
+    }
+
+    .datepicker td,
+    .datepicker th {
+        padding: .5rem 1rem;
+    }
+}
+
+@media screen and (max-width: 678px) {
+
+    .datepicker.datepicker-dropdown,
+    .datepicker.datepicker-inline {
+        width: 80%;
+        top: 145px !important;
+    }
+
+    .datepicker td,
+    .datepicker th {
+        padding: .5rem;
+        font-size: .8rem;
+    }
+}
+
+@media screen and (max-width: 348px) {
+
+    .datepicker td,
+    .datepicker th {
+        padding: .3rem;
+    }
+}
+
+/* Date-picker navigation menu hover bg-color */
+.datepicker .datepicker-switch:hover,
+.datepicker .prev:hover,
+.datepicker .next:hover,
+.datepicker tfoot tr th:hover {
+    background: var(--dp-switch-menu-bg-color);
+    transition: all 0.35s ease-in-out;
+}
+
+/* Old and new date color */
+.datepicker table tr td.old,
+.datepicker table tr td.new {
+    color: var(--dp-old-new-date-color);
+}
+
+/* Month and year hover and focused color */
+.datepicker table tr td span:hover,
+.datepicker table tr td span.focused {
+    background: var(--dp-month-year-hover-focused-color);
+}
+
+/* Month and year text color */
+.datepicker table tr td span.old,
+.datepicker table tr td span.new {
+    color: var(--dp-old-new-date-color);
+}
+
+/* Date active color */
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active:hover:hover,
+.datepicker table tr td.active.disabled:hover,
+.datepicker table tr td.active.disabled:hover:hover,
+.datepicker table tr td.active:active,
+.datepicker table tr td.active:hover:active,
+.datepicker table tr td.active.disabled:active,
+.datepicker table tr td.active.disabled:hover:active,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active:hover.active,
+.datepicker table tr td.active.disabled.active,
+.datepicker table tr td.active.disabled:hover.active,
+.datepicker table tr td.active.disabled,
+.datepicker table tr td.active:hover.disabled,
+.datepicker table tr td.active.disabled.disabled,
+.datepicker table tr td.active.disabled:hover.disabled,
+.datepicker table tr td.active[disabled],
+.datepicker table tr td.active:hover[disabled],
+.datepicker table tr td.active.disabled[disabled],
+.datepicker table tr td.active.disabled:hover[disabled] {
+    background-image: none;
+    background-color: var(--dp-active-bg-color);
+    color: var(--dp-active-text-color);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    transition: all 0.35s ease-in-out;
+}
+
+
+.datepicker table tr td span:hover,
+.datepicker table tr td span.focused {
+    background: var(--dp-month-year-hover-focused-color);
+}
+
+.datepicker table tr td.day:hover,
+.datepicker table tr td.day.focused {
+    background: var(--dp-hover-color);
+    color: var(--dp-hover-text-color);
+    cursor: pointer;
+    transition: all 0.35s ease-in-out;
+}
+
+.datepicker-dropdown:before,
+.datepicker-dropdown:after {
+    display: none;
+}
+
+
+.datepicker table tr td.highlighted {
+    background: var(--dp-highlighted-bg-color);
+    color: var(--dp-highlighted-text-color);
+    border-radius: 0;
+}

@@ -1,0 +1,157 @@
+
+/* Switch button light theme*/
+
+:root {
+    --hue: 223;
+    --hue-success: 103;
+    --bg: hsl(var(--hue),10%,80%);
+    --fg: hsl(var(--hue),10%,10%);
+    --primary: hsl(var(--hue),90%,50%);
+    --primary-t: hsla(var(--hue),90%,50%,0);
+    --trans-dur: 0.3s;
+    --trans-timing: cubic-bezier(0.65,0,0.35,1);
+}
+
+.setting {
+    box-shadow:
+        0 0.125em 0 hsl(var(--hue),10%,40%) inset,
+        0 -0.125em 0 hsl(var(--hue),10%,20%) inset;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75em 1em;
+}
+.setting:only-child {
+    border-radius: 0.25em;
+}
+.setting:first-child {
+    border-radius: 0.25em 0.25em 0 0;
+}
+.setting:last-child {
+    border-radius: 0 0 0.25em 0.25em;
+}
+.setting,
+.switch__input {
+    -webkit-tap-highlight-color: transparent;
+}
+.switch,
+.switch:before,
+.switch:after {
+    display: block;
+}
+.switch {
+    background-image: linear-gradient(hsl(var(--hue),10%,15%),hsl(var(--hue),10%,35%));
+    box-shadow: 0 0 0.125em 0.125em hsl(var(--hue),10%,30%) inset;
+    border-radius: 1em;
+    flex-shrink: 0;
+    position: relative;
+    width: 5em;
+    height: 2em;
+}
+.switch:before,
+.switch:after {
+    border-radius: 0.75em;
+    content: "";
+    position: absolute;
+    top: 0.25em;
+    left: 0.25em;
+    width: 4.5em;
+    height: 1.5em;
+}
+.switch:before {
+    background-color: hsl(var(--hue),10%,40%);
+}
+.switch::after {
+    box-shadow: 0 0 0.5em hsl(0,0%,0%) inset;
+    z-index: 1;
+}
+.switch__fill {
+    border-radius: 0.75em;
+    overflow: hidden;
+    position: absolute;
+    top: 0.25em;
+    right: 0;
+    left: 0.25em;
+    width: 4.5em;
+    height: 1.5em;
+    z-index: 1;
+}
+.switch__input {
+    border-radius: 1em;
+    box-shadow: 0 0 0 0.125em var(--primary-t);
+    cursor: pointer;
+    outline: transparent;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: box-shadow calc(var(--trans-dur) / 2) var(--trans-timing);
+    z-index: 2;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.switch__input:focus-visible {
+    box-shadow: 0 0 0 0.125em var(--primary);
+}
+.switch__input:before,
+.switch__input:after {
+    border-radius: 50%;
+    content: "";
+    display: block;
+    position: absolute;
+    transition: transform var(--trans-dur) var(--trans-timing);
+}
+.switch__input:before {
+    background-image: linear-gradient(hsl(var(--hue),10%,50%),hsl(var(--hue),10%,20%));
+    box-shadow:
+        0 0 0.125em 0.0625em hsl(var(--hue),10%,10%),
+        0 0.25em 0.25em hsla(var(--hue),10%,10%,0.4);
+    top: 0.125em;
+    left: 0.125em;
+    width: 1.75em;
+    height: 1.75em;
+}
+.switch__input:after {
+    background-image: linear-gradient(hsl(var(--hue),10%,40%),hsl(var(--hue),10%,30%));
+    top: 0.25em;
+    left: 0.25em;
+    width: 1.5em;
+    height: 1.5em;
+}
+.switch__text {
+    background-color: hsl(var(--hue-success),90%,50%,0.5);
+    color: hsl(var(--hue-success),90%,10%);
+    display: block;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 2;
+    opacity: 0.6;
+    padding: 0 0.75em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-shadow: 0 0.0625rem 0 hsl(var(--hue-success),90%,45%);
+    transform: translateX(-4.25em);
+    transition: transform var(--trans-dur) var(--trans-timing);
+    z-index: -1;
+}
+.switch__text + .switch__text {
+    background-color: hsla(0,0%,0%,0);
+    color: hsl(var(--hue),10%,10%);
+    text-shadow: 0 0.0625rem 0 hsl(var(--hue),10%,55%);
+    text-align: right;
+    transform: translateX(0);
+}
+.switch__input:checked:before,
+.switch__input:checked:after {
+    transform: translateX(3em);
+}
+.switch__input:checked + .switch__fill .switch__text {
+    transform: translateX(0);
+}
+.switch__input:checked + .switch__fill .switch__text + .switch__text {
+    transform: translateX(4em);
+}
+
+

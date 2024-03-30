@@ -1,0 +1,337 @@
+:root {
+    --light-bg-color: #F0F0F0;
+    --light-border-color: #d6d6d6;
+    --light-txt-color: #575d7f;
+    --light-dark-hover-txt-color: #F0F0F0;
+}
+body {
+    color: var(--light-txt-color);
+}
+
+/* Miscellaneous */
+body,
+html {
+    background-color: var(--light-bg-color);
+}
+
+
+/* page */
+
+.page-title {
+    color: var(--light-txt-color);
+}
+
+/* Dropdown */
+.dropdown-menu {
+    background-color: var(--light-bg-color);
+    border: 1px solid var(--light-border-color);
+    color: var(--light-txt-color);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--light-border-color);
+}
+
+
+.dropdown-item {
+    color: var(--light-txt-color);
+}
+
+.dropdown .dropdown-menu .dropdown-item:hover {
+    color: var(--light-dark-hover-txt-color);
+    background-color: #373738;
+    transition: all 0.2s ease-in-out;
+}
+
+
+/* Navbar */
+.navbar .navbar-menu-wrapper .navbar-nav .nav-item.dropdown .dropdown-menu.navbar-dropdown {
+    -webkit-box-shadow: 0 3px 15px -3px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 3px 15px -3px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-header {
+    color: var(--light-txt-color);
+}
+
+
+/* Navbar */
+.navbar {
+    background-color: var(--light-bg-color);
+}
+
+.navbar .navbar-brand-wrapper {
+    background: #191c24;
+}
+.navbar .navbar-menu-wrapper {
+    box-shadow: 15px 3px 20px -12px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 15px 3px 20px -12px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 15px 3px 20px -12px rgba(0, 0, 0, 0.5);
+    color: inherit;
+}
+
+.border-left {
+    border-left: 1px solid var(--light-border-color) !important;
+}
+
+/* Sidebar */
+@media screen and (min-width: 992px) {
+    .sidebar {
+        /*background: var(--light-bg-color);*/
+        background: radial-gradient(circle at 85% 33%,rgba(108,99,255,.1),hsla(0,0%,100%,0) 25%),
+        radial-gradient(circle at 12% 55%,rgba(255, 72, 0, 0.085),hsla(0,0%,100%,0) 25%);
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .sidebar {
+        background: radial-gradient(circle at 85% 33%,rgba(222, 221, 255, 0.9),hsla(0,0%,100%,0) 25%),
+        radial-gradient(circle at 12% 55%,rgb(255, 230, 221),hsl(0, 0%, 100%) 25%);
+    }
+}
+
+.sidebar .sidebar-brand-wrapper {
+    background: var(--light-bg-color);
+}
+
+.sidebar .nav .nav-item .nav-link {
+    color: var(--light-txt-color);
+}
+
+.sidebar .nav .nav-item.nav-category .nav-link {
+    color: var(--light-txt-color);
+}
+
+.sidebar .nav.sub-menu .nav-item .nav-link:hover {
+    color: #2b2f4e;
+}
+
+.navbar .navbar-menu-wrapper .search input {
+    background: #191c24;
+    border: 1px solid #2c2e33;
+}
+
+
+
+.content-wrapper {
+    background: #F5F7F8;
+}
+
+/* Footer */
+.footer {
+    background: var(--light-bg-color);
+}
+
+
+/* Date picker */
+.datepicker.datepicker-dropdown, .datepicker.datepicker-inline {
+    color: var(--light-txt-color);
+}
+
+.datepicker table tr td.old, .datepicker table tr td.new {
+    color: rgb(191, 191, 191);
+}
+
+.datepicker.datepicker-dropdown,
+.datepicker.datepicker-inline {
+    box-shadow: 0 0 10px 2px rgba(153, 153, 153, 0.5);
+    background: radial-gradient(circle at 85% 33%,rgba(108,99,255,.2),hsla(0,0%,100%,0) 25%),
+    radial-gradient(circle at 20% 60%,rgb(255, 231, 222),hsl(0, 0%, 100%) 25%);
+}
+
+.datepicker table tr td.highlighted {
+    background: rgba(208, 206, 206, 0.5);
+}
+
+/* Date-picker navigation menu hover bg-color */
+.datepicker .datepicker-switch:hover,
+.datepicker .prev:hover,
+.datepicker .next:hover,
+.datepicker tfoot tr th:hover {
+    background: var(--dp-switch-menu-bg-color);
+    color: rgb(203, 203, 203);
+    transition: all 0.35s ease-in-out;
+}
+
+.datepicker table tr td span:hover, .datepicker table tr td span.focused {
+    color: rgb(203, 203, 203);
+}
+
+/* Card */
+.card .card-title {
+    color: var(--light-txt-color);
+}
+.card {
+    background-color: #f2f2f2;
+    border: 1px solid rgba(140, 140, 140, 0.13);
+}
+
+/* Table */
+
+.table th,
+.jsgrid .jsgrid-table th,
+.table td,
+.jsgrid .jsgrid-table td {
+    border-top: 1px solid var(--light-border-color);
+}
+
+.table thead th, .jsgrid .jsgrid-table thead th {
+    border-bottom: 2px solid var(--light-border-color);
+}
+
+.table-hover tbody tr:hover {
+    color: var(--light-dark-hover-txt-color);
+    background-color: #373738;
+}
+
+.table-bordered th, .table-bordered td {
+    border: 1px solid var(--light-border-color);
+}
+
+/* Form */
+select.form-control, select.asColorPicker-input, .dataTables_wrapper select,
+.jsgrid .jsgrid-table .jsgrid-filter-row select,
+.select2-container--default select.select2-selection--single,
+.select2-container--default .select2-selection--single select.select2-search__field,
+select.typeahead, select.tt-query, select.tt-hint {
+    color: #4b5564;
+}
+.form-control, .asColorPicker-input, .dataTables_wrapper select,
+.jsgrid .jsgrid-table .jsgrid-filter-row input[type="text"],
+.jsgrid .jsgrid-table .jsgrid-filter-row select,
+.jsgrid .jsgrid-table .jsgrid-filter-row input[type="number"],
+.typeahead, .tt-query, .tt-hint {
+    border: 1px solid var(--light-border-color) !important;
+    background-color: #E3E3E3;
+    border-radius: 2px;
+    color: #4b5564;
+}
+
+.select2-container--default .select2-selection--single, .select2-container--default .select2-dropdown, .select2-container--default .select2-selection--multiple {
+    border: 1px solid var(--light-border-color) !important;
+    background-color: #E3E3E3;
+}
+
+.navbar .navbar-menu-wrapper .search input {
+    background: #E3E3E3;
+    border: 1px solid #c6c6c6;
+}
+
+.sidebar .nav.sub-menu .nav-item .nav-link.active {
+    color: #0090e7;
+}
+
+select.form-control:focus,
+select.asColorPicker-input:focus,
+.dataTables_wrapper select:focus,
+.jsgrid .jsgrid-table .jsgrid-filter-row select:focus,
+.select2-container--default select.select2-selection--single:focus,
+.select2-container--default .select2-selection--single select.select2-search__field:focus,
+select.typeahead:focus,
+select.tt-query:focus,
+select.tt-hint:focus {
+    outline: 1px solid #336a23;
+}
+.form-control:focus,
+.asColorPicker-input:focus,
+.dataTables_wrapper select:focus,
+.jsgrid .jsgrid-table .jsgrid-filter-row input:focus[type="text"],
+.jsgrid .jsgrid-table .jsgrid-filter-row select:focus,
+.jsgrid .jsgrid-table .jsgrid-filter-row input:focus[type="number"],
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default .select2-selection--single .select2-search__field:focus,
+.typeahead:focus, .tt-query:focus, .tt-hint:focus {
+    background: rgba(138, 212, 117, 0.07);
+    border: 1px solid #336a23;
+}
+
+
+/* Modal css */
+.modal-header {
+    border-bottom: 1px solid var(--light-border-color);
+}
+.modal-content {
+    background: radial-gradient(circle at 85% 33%,rgba(234, 234, 251, 0.9),hsla(0,0%,100%,0) 25%),
+    radial-gradient(circle at 12% 55%,rgb(255, 230, 221),hsl(0, 0%, 100%) 25%);
+    border: 1px solid var(--light-border-color);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--light-border-color);
+}
+
+
+/* Switch button dark theme */
+:root {
+    --bg: hsl(var(--hue),10%,20%);
+    --fg: hsl(var(--hue),10%,90%);
+    --primary: hsl(var(--hue),90%,70%);
+    --primary-t: hsla(var(--hue),90%,70%,0);
+}
+.setting {
+    box-shadow:
+        0 0.125em 0 hsl(var(--hue),10%,100%) inset,
+        0 -0.125em 0 hsl(var(--hue),10%,75%) inset;
+}
+.switch {
+    background-image: linear-gradient(hsl(var(--hue),10%,60%),hsl(var(--hue),10%,95%));
+    box-shadow: 0 0 0.125em 0.125em hsl(var(--hue),10%,90%) inset;
+}
+.switch:before {
+    background-color: hsl(var(--hue),10%,60%);
+}
+.switch:after {
+    box-shadow: 0 0 0.5em hsl(var(--hue),10%,20%) inset;
+}
+
+.switch__input:before {
+    background-image: linear-gradient(hsl(0,0%,100%),hsl(var(--hue),10%,60%));
+    box-shadow:
+        0 0 0.125em 0.0625em hsl(var(--hue),10%,40%),
+        0 0.25em 0.25em hsla(var(--hue),10%,10%,0.4);
+}
+.switch__input:after {
+    background-image: linear-gradient(hsl(var(--hue),10%,90%),hsl(var(--hue),10%,80%));
+}
+.switch__text {
+    text-shadow: 0 0.0625rem 0 hsl(var(--hue-success),90%,55%);
+}
+.switch__text + .switch__text {
+    color: hsl(var(--hue),10%,10%);
+    text-shadow: 0 0.0625rem 0 hsl(var(--hue),10%,75%);
+}
+
+
+/*accordion light css*/
+
+#accordion .accordion-title {
+    color: var(--light-txt-color);
+}
+
+#accordion .accordion-title i {
+    color: var(--light-txt-color);
+    /*background: radial-gradient(rgba(33, 55, 68, 0.8), #213744);*/
+}
+#accordion .accordion-title:hover {
+    /*background: #213744;*/
+    color: #000;
+}
+#accordion .accordion-title:hover i {
+    border-right: 1px solid var(--light-border-color);
+}
+
+#accordion .card-header {
+    border: 1px solid #ddd;
+}
+.accordion-body {
+    background: radial-gradient(rgba(255, 245, 245, 0.8), #eee);
+}
+
+.progress {
+    height: 1.5rem;
+}
+.progress-bar {
+    color: #fff;
+    background-color: #000;
+}

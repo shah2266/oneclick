@@ -1,0 +1,523 @@
+/* DatePicker */
+.datepicker.datepicker-dropdown,
+.datepicker.datepicker-inline {
+    padding: 0 25px;
+    width: 30%;
+    max-width: 500px;
+    min-width: 250px;
+    background-color: #818181;
+    box-shadow: 0px 0px 6px 3px #fff;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th {
+    text-align: center;
+    padding: .5rem 0;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th.prev,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th.prev {
+    color: #434a54;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    text-align: left;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th.datepicker-switch,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th.datepicker-switch {
+    color: #434a54;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th.next,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th.next {
+    color: grey;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    text-align: right;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th.dow,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th.dow {
+    font-weight: normal;
+    color: #434a54;
+    font-size: .875rem;
+    font-weight: initial;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th.dow:first-child,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th.dow:first-child {
+    text-align: left;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed thead tr th.dow:last-child,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed thead tr th.dow:last-child {
+    text-align: right;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody {
+    position: relative;
+    top: 13px;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td {
+    text-align: center;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.day,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.day {
+    font-size: .9375rem;
+    padding: .5rem 0;
+    color: #434a54;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.day:hover,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.day:hover {
+    background: #ffffff;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.day.active,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.day.active {
+    color: #fff;
+    background: transparent;
+    position: relative;
+    z-index: 1;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.day.active:before,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.day.active:before {
+    content: "";
+    width: 38px;
+    height: 38px;
+    background: #00d25b;
+    border-radius: 100%;
+    display: block;
+    margin: auto;
+    vertical-align: middle;
+    position: absolute;
+    top: 1px;
+    z-index: -1;
+    left: 0;
+    right: 0;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.day.today,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.day.today {
+    color: #fff;
+    background: transparent;
+    position: relative;
+    z-index: 1;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.day.today:before,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.day.today:before {
+    content: "";
+    width: 38px;
+    height: 38px;
+    background: #8f5fe8;
+    border-radius: 100%;
+    display: block;
+    margin: auto;
+    vertical-align: middle;
+    position: absolute;
+    top: 1px;
+    z-index: -1;
+    left: 0;
+    right: 0;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.old.day,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.old.day {
+    color: #d9dde3;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.range-start,
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.range-end,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.range-start,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.range-end {
+    background: transparent;
+    position: relative;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.range-start::before,
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.range-end::before,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.range-start::before,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.range-end::before {
+    content: "";
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 210, 91, 0.2);
+    border-radius: 4px;
+    display: block;
+    margin: auto;
+    vertical-align: middle;
+    position: absolute;
+    top: 6px;
+    z-index: -1;
+    left: 0;
+    right: 0;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.range,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.range {
+    position: relative;
+    background: transparent;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed tbody td.range::before,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed tbody td.range::before {
+    content: "";
+    width: 28px;
+    height: 28px;
+    background: #eee;
+    border-radius: 4px;
+    display: block;
+    margin: auto;
+    vertical-align: middle;
+    position: absolute;
+    top: 6px;
+    z-index: -1;
+    left: 0;
+    right: 0;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days,
+.datepicker.datepicker-dropdown .datepicker-months,
+.datepicker.datepicker-dropdown .datepicker-years,
+.datepicker.datepicker-dropdown .datepicker-decades,
+.datepicker.datepicker-dropdown .datepicker-centuries,
+.datepicker.datepicker-inline .datepicker-days,
+.datepicker.datepicker-inline .datepicker-months,
+.datepicker.datepicker-inline .datepicker-years,
+.datepicker.datepicker-inline .datepicker-decades,
+.datepicker.datepicker-inline .datepicker-centuries {
+    padding: .8rem .7rem;
+}
+
+.datepicker.datepicker-dropdown .datepicker-days table.table-condensed,
+.datepicker.datepicker-dropdown .datepicker-months table.table-condensed,
+.datepicker.datepicker-dropdown .datepicker-years table.table-condensed,
+.datepicker.datepicker-dropdown .datepicker-decades table.table-condensed,
+.datepicker.datepicker-dropdown .datepicker-centuries table.table-condensed,
+.datepicker.datepicker-inline .datepicker-days table.table-condensed,
+.datepicker.datepicker-inline .datepicker-months table.table-condensed,
+.datepicker.datepicker-inline .datepicker-years table.table-condensed,
+.datepicker.datepicker-inline .datepicker-decades table.table-condensed,
+.datepicker.datepicker-inline .datepicker-centuries table.table-condensed {
+    width: 100%;
+}
+
+.datepicker.datepicker-inline {
+    width: 100%;
+    max-width: 100%;
+    min-width: 250px;
+}
+
+.datepicker.datepicker-inline thead tr th.prev {
+    color: grey;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.datepicker.datepicker-inline thead tr th.datepicker-switch {
+    color: #0090e7;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.datepicker.datepicker-inline thead tr th.next {
+    color: grey;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.datepicker>div {
+    display: initial;
+}
+
+.datepicker-custom {
+    width: 100%;
+    padding: 0;
+}
+
+.datepicker-custom .datepicker.datepicker-inline {
+    display: block;
+    padding: 0;
+    height: 100%;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days {
+    display: block;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td {
+    padding: 1rem;
+    text-align: center;
+}
+
+@media (max-width: 991px) {
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td {
+        padding: 1rem .5rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day.today:before {
+    background-color: #00d25b;
+    top: 6px;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day.active:before {
+    background-color: #ffab00;
+    top: 6px;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:first-child {
+    padding-left: 2.5rem;
+}
+
+@media (max-width: 991px) {
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:first-child {
+        padding-left: .5rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:first-child.today:before,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:first-child.active:before {
+    left: 1.5rem;
+}
+
+@media (max-width: 991px) {
+
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:first-child.today:before,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:first-child.active:before {
+        left: .25rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:last-child {
+    padding-right: 2.5rem;
+}
+
+@media (max-width: 991px) {
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:last-child {
+        padding-right: .5rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:last-child.today:before,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed tbody tr td.day:last-child.active:before {
+    right: 1.5rem;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries {
+    height: 100%;
+    padding: 0 0 1rem 0;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed {
+    height: 100%;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead {
+    background: #00d25b;
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.dow,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.dow,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.dow,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.dow,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.dow {
+    background: transparent;
+    border-radius: 0;
+    color: #ffffff;
+    padding: 2rem 1rem;
+    font-weight: 700;
+}
+
+@media (max-width: 991px) {
+
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.next,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.prev,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.dow,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.next,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.prev,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.dow,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.next,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.prev,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.dow,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.next,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.prev,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.dow,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.next,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.prev,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.dow {
+        padding: 2rem .5rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.next:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.prev:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.dow:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.next:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.prev:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.dow:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.next:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.prev:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.dow:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.next:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.prev:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.dow:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.next:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.prev:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch:first-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.dow:first-child {
+    padding-left: 2.5rem;
+}
+
+@media (max-width: 991px) {
+
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.next:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.prev:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.dow:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.next:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.prev:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.dow:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.next:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.prev:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.dow:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.next:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.prev:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.dow:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.next:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.prev:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch:first-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.dow:first-child {
+        padding-left: .5rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.next:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.prev:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.dow:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.next:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.prev:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.dow:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.next:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.prev:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.dow:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.next:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.prev:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.dow:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.next:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.prev:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch:last-child,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.dow:last-child {
+    padding-right: 2.5rem;
+}
+
+@media (max-width: 991px) {
+
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.next:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.prev:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.dow:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.next:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.prev:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.dow:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.next:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.prev:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.dow:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.next:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.prev:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.dow:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.next:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.prev:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch:last-child,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.dow:last-child {
+        padding-right: .5rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch {
+    font-size: 2rem;
+}
+
+@media (max-width: 991px) {
+
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.datepicker-switch,
+    .datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.datepicker-switch {
+        font-size: 1rem;
+    }
+}
+
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-days .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-months .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-years .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-decades .table-condensed thead tr th.prev,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.next,
+.datepicker-custom .datepicker.datepicker-inline .datepicker-centuries .table-condensed thead tr th.prev {
+    font-size: 1.5rem;
+}
