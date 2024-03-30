@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 
@@ -24,6 +25,7 @@ class HomeController extends Controller
      */
     public function index(): Renderable
     {
-        return view('home');
+        $users = User::count();
+        return view('home', compact('users'));
     }
 }
