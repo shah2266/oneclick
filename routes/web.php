@@ -13,6 +13,7 @@ use App\Http\Controllers\IGWANDIOS\IofInOutBoundReportController;
 use App\Http\Controllers\IGWANDIOS\IofReportController;
 use App\Http\Controllers\IofCompanyController;
 use App\Http\Controllers\IOS\BtrcController;
+use App\Http\Controllers\IOS\IosBtrcMonthlyReportController;
 use App\Http\Controllers\IOS\IOSDailyReportController;
 use App\Http\Controllers\IOS\IOSDayWiseDataCrossCheckController;
 use App\Http\Controllers\Noclick\NoclickCommandController;
@@ -36,6 +37,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+Route::get('/develop', [IosBtrcMonthlyReportController::class, 'index']);
 
 Auth::routes([
     'register' => false,
