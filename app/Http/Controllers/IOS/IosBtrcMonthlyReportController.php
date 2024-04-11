@@ -55,13 +55,6 @@ class IosBtrcMonthlyReportController extends Controller
         $this->excel = new Spreadsheet();
     }
 
-    private function companyList(): array
-    {
-        //return [6, 8, 9, 11, 14, 16, 19, 23, 27, 30];
-        return [6, 8, 9, 11];
-    }
-
-
     /**
      * @return string[]
      */
@@ -128,30 +121,91 @@ class IosBtrcMonthlyReportController extends Controller
         $endDate = '20240331';
         $direction = 'Int. Incoming';
 
-        foreach ($this->companyList() as $key => $companyId) {
-
+        foreach ($this->companies() as $companyId => $companyName) {
             // Reinitialize $this->excel for each iteration
             $this->excel = new Spreadsheet();
 
             $result = $this->queries($startDate, $endDate, $companyId);
 
             $sheetName = $this->workSheetName();
+            $hasData = false; // Flag to track if any data is found
             //dump($result);
             for($i = 0; $i < count($result); $i++) {
-                if(!Collection::make($result[$i]['data'])->isEmpty()) {
+                $sheetData = Collection::make($result[$i]['data']);
+                if(!$sheetData->isEmpty()) {
+                    $hasData = true; // Set flag to true if data is found
                     ($i == 0) ? $this->excel->getActiveSheet()->setTitle($sheetName[$i]) : $this->excel->createSheet()->setTitle($sheetName[$i]);
                     $this->dataSetter($i, $startDate, $endDate, $direction, $result[$i]);
                 }
             }
 
+            // If no data is found, skip saving the Excel file
+            if (!$hasData) {
+                continue;
+            }
+
+            // Get the previous month name and year in the "Month-Year" format
+            $previousMonth = Carbon::now()->subMonth()->format('F-Y');
+//            echo "<pre>";
+//            print_r( $companyId . ',' . $companyName);
             $writer = new Xlsx($this->excel);
-
-            $writer->save(public_path().'/platform/ios/btrcmonthlyreport/icxandanswise/companyId__' . $key . '__' . $companyId . '.xlsx');
-
+            $writer->save(public_path().'/platform/ios/btrcmonthlyreport/icxandanswise/' . $companyName .', '. $previousMonth . '.xlsx');
         }
         dd('test');
     }
 
+    /**
+     * @return array
+     */
+    private function companies(): array
+    {
+
+        // Retrieve data from the database
+        $companies = IofCompany::where('type', 1)
+            ->select('systemId', 'shortName')
+            ->get();
+
+        // Initialize an empty associative array
+        $companyDetails = [];
+
+        // Add the systemId values to be ignored
+        $ignoredCompanyIds =  [
+            2,   // Bangla Trac Communications Limited
+            4,   // Mir Telecom Limited
+            5,   // NovoTel Limited
+            7,   // BG Tel Limited
+            10,  // 1Asia Alliance Gateway Limited
+            12,  // Sigma Telecom Limited
+            //14,  // DBL Telecom Limited
+            //16,  // First Communication Limited
+            //19,  // MOS5 Tel Limited
+            20,  // Cel Telecom Limited
+            21,  // Ranks Telecom Limited
+            22,  // Bangla Tel Limited
+            //23,  // SM Communication Limited
+            24,  // Platinum Communications Limited
+            26,  // Bangladesh International Gateway Limited
+            //27,  // Digicon Telecommunication Limited
+            28,  // Venus Telecom Limited
+            //30,  // Songbird Telecom Limited
+            118, // LR Telecom Limited
+        ];
+
+        foreach ($companies as $company) {
+
+            // Ignore specific systemId values
+            if (in_array($company->systemId, $ignoredCompanyIds)) {
+                continue; // Skip this company
+            }
+
+            $companyDetails[$company->systemId] = $company->shortName;
+        }
+
+        // Sorting ASC
+        ksort($companyDetails);
+
+        return $companyDetails;
+    }
 
     /**
      * @param $startDate

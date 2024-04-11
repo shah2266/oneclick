@@ -85,41 +85,6 @@ trait SQLQueryServices
         return ['data' => $data, 'total_count' => $totalCount];
     }
 
-//    public function fetchIcxAndAnsOutgoingDate($table, $dateColumn, $fromDate, $toDate, $companyID, $joinColumn): array
-//    {
-//        $query = /** @lang text */
-//            "
-//            SELECT
-//                CONVERT(varchar(7), cm.$dateColumn, 126) AS month,
-//                outCom.ShortName AS inCompany,
-//                inCom.ShortName AS outCompany,
-//                " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS successfulCall,
-//                SUM(cm.CallDuration) / 60 AS duration,
-//                SUM(cm.BillDuration) / 60 AS billDuration
-//            FROM
-//                $table cm, Company inCom, Company outCom
-//            WHERE
-//                cm.$dateColumn BETWEEN '$fromDate 00:00:00' AND '$toDate 23:59:59'
-//                AND cm.ReportTrafficDirection = 2
-//                AND cm.OutCompanyID IN ($companyID)
-//                AND cm.OutCompanyID = outCom.CompanyID
-//                AND cm.$joinColumn = inCom.CompanyID
-//            GROUP BY
-//                CONVERT(varchar(7), cm.ConnectionTime, 126),
-//                outCom.ShortName,
-//                inCom.ShortName
-//            ORDER BY
-//                 outCom.ShortName ASC;
-//            ";
-//
-//        $data = $this->QueryExecuted('sqlsrv2', $query);
-//
-//        // Get the total count
-//        $totalCount = count($data);
-//
-//        return ['data' => $data, 'total_count' => $totalCount];
-//    }
-
     /**
      * @param string $connectionName
      * @param string $query
