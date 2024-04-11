@@ -4,6 +4,7 @@ namespace App\Http\Controllers\IOS;
 
 use App\Http\Controllers\Controller;
 use App\Models\IofCompany;
+use App\Traits\ExcelDataFormatting;
 use App\Traits\SQLQueryServices;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -37,7 +38,7 @@ use ZipArchive;
 
 class IosBtrcMonthlyReportController extends Controller
 {
-    use SQLQueryServices;
+    use SQLQueryServices, ExcelDataFormatting;
 
     const CELL_NAME = 'A';
     const A_ASCII_VALUE = 65;
@@ -146,8 +147,6 @@ class IosBtrcMonthlyReportController extends Controller
 
             // Get the previous month name and year in the "Month-Year" format
             $previousMonth = Carbon::now()->subMonth()->format('F-Y');
-//            echo "<pre>";
-//            print_r( $companyId . ',' . $companyName);
             $writer = new Xlsx($this->excel);
             $writer->save(public_path().'/platform/ios/btrcmonthlyreport/icxandanswise/' . $companyName .', '. $previousMonth . '.xlsx');
         }
@@ -170,26 +169,31 @@ class IosBtrcMonthlyReportController extends Controller
 
         // Add the systemId values to be ignored
         $ignoredCompanyIds =  [
-            2,   // Bangla Trac Communications Limited
-            4,   // Mir Telecom Limited
-            5,   // NovoTel Limited
-            7,   // BG Tel Limited
+            2,  // Bangla Trac Communications Limited
+            4,  // Mir Telecom Limited
+            5,  // NovoTel Limited
+            6,  // Global Voice Telecom Limited
+            7,  // BG Tel Limited
+            8,  // HRC Technologies Limited
+            //9,  // Roots Communication Limited
             10,  // 1Asia Alliance Gateway Limited
+            11,  // Unique Infoway Limited
             12,  // Sigma Telecom Limited
-            //14,  // DBL Telecom Limited
+            14,  // DBL Telecom Limited
             //16,  // First Communication Limited
-            //19,  // MOS5 Tel Limited
+            19,  // MOS5 Tel Limited
             20,  // Cel Telecom Limited
             21,  // Ranks Telecom Limited
             22,  // Bangla Tel Limited
-            //23,  // SM Communication Limited
+            23,  // SM Communication Limited
             24,  // Platinum Communications Limited
             26,  // Bangladesh International Gateway Limited
-            //27,  // Digicon Telecommunication Limited
+            27,  // Digicon Telecommunication Limited
             28,  // Venus Telecom Limited
-            //30,  // Songbird Telecom Limited
+            30,  // Songbird Telecom Limited
             118, // LR Telecom Limited
         ];
+
 
         foreach ($companies as $company) {
 
@@ -228,6 +232,7 @@ class IosBtrcMonthlyReportController extends Controller
     {
         foreach ($heading as $key => $value) {
             $this->excel->getActiveSheet()->setCellValue(self::CELL_NAME . ($key + 1), $value);
+            $this->cellMerge($this->excel, self::CELL_NAME . ($key + 1), chr(self::A_ASCII_VALUE + 5) . ($key + 1));
         }
     }
 
@@ -264,6 +269,10 @@ class IosBtrcMonthlyReportController extends Controller
                 $this->excel->getActiveSheet()->setCellValue(chr(self::A_ASCII_VALUE+$i).(self::REPORT_FIRST_CELL+$key), $data->$sch);
             }
         }
+
+        $this->columnAutoresize($this->excel, chr(self::A_ASCII_VALUE), chr(self::A_ASCII_VALUE + 5));
+        //$this->allBorders($this->excel, chr(self::A_ASCII_VALUE) . self::TABLE_HEADER_CELL, chr(self::A_ASCII_VALUE + 5) . $queryResult['total_count']);
+
 
         $this->excel->setActiveSheetIndex(0); //Default active worksheet.
 
