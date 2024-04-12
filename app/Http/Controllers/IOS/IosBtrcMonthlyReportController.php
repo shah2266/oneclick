@@ -6,35 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\IofCompany;
 use App\Traits\ExcelDataFormatting;
 use App\Traits\SQLQueryServices;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use App\Authors\AuthorInformation;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use PhpOffice\PhpSpreadsheet\Style\Font;
-use PhpOffice\PhpSpreadsheet\Chart\Chart;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
-use PhpOffice\PhpSpreadsheet\Chart\Legend;
-use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
-use PhpOffice\PhpSpreadsheet\Chart\Title;
-use PhpOffice\PhpSpreadsheet\Chart\Layout;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
-use App\Query\CallSummaryIncomingQuery;
-use App\Query\CallSummaryOutgoingQuery;
-use App\Authors\AuthorInformation;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use ZipArchive;
 
 class IosBtrcMonthlyReportController extends Controller
 {
@@ -42,8 +19,8 @@ class IosBtrcMonthlyReportController extends Controller
 
     const CELL_NAME = 'A';
     const A_ASCII_VALUE = 65;
-    const TABLE_HEADER_CELL = 6;
-    const REPORT_FIRST_CELL = 7;
+    const TABLE_HEADER_CELL = 7;
+    const REPORT_FIRST_CELL = 8;
 
     /**
      * @var Spreadsheet
@@ -65,23 +42,19 @@ class IosBtrcMonthlyReportController extends Controller
             'Traffic Summary',
             'From Date: ' . $startDate,
             'To Date: ' . $endDate,
-            'Direction: ' . $direction
+            'Direction: ' . $direction,
+            'Month: ' . Carbon::parse($startDate)->format('F Y')
         ];
     }
 
     /**
      * @return string[]
      */
-    private function tableHeading(): array
+    private function tableHeading($direction): array
     {
-        return [
-            'Month',
-            'Company Name',
-            'ICX Name',
-            'No of Call',
-            'Dur (Min)',
-            'Bill Dur (Min)'
-        ];
+        return ($direction == 1) ?
+            ['Month', 'IGW Name', 'Out Company', 'No of Call', 'Dur (Min)', 'Bill Dur (Min)'] :
+            ['Month', 'In Company', 'IGW Name', 'No of Call', 'Dur (Min)', 'Bill Dur (Min)'];
     }
 
     /**
@@ -120,7 +93,6 @@ class IosBtrcMonthlyReportController extends Controller
     {
         $startDate = '20240301';
         $endDate = '20240331';
-        $direction = 'Int. Incoming';
 
         foreach ($this->companies() as $companyId => $companyName) {
             // Reinitialize $this->excel for each iteration
@@ -135,8 +107,9 @@ class IosBtrcMonthlyReportController extends Controller
                 $sheetData = Collection::make($result[$i]['data']);
                 if(!$sheetData->isEmpty()) {
                     $hasData = true; // Set flag to true if data is found
+                    $direction = ($i < 2) ? '1' : '2'; // Direction
                     ($i == 0) ? $this->excel->getActiveSheet()->setTitle($sheetName[$i]) : $this->excel->createSheet()->setTitle($sheetName[$i]);
-                    $this->dataSetter($i, $startDate, $endDate, $direction, $result[$i]);
+                    $this->setDataInSpreadsheet($i, $startDate, $endDate, $direction , $result[$i]);
                 }
             }
 
@@ -144,6 +117,8 @@ class IosBtrcMonthlyReportController extends Controller
             if (!$hasData) {
                 continue;
             }
+            //Authors
+            $this->authors($this->excel);
 
             // Get the previous month name and year in the "Month-Year" format
             $previousMonth = Carbon::now()->subMonth()->format('F-Y');
@@ -172,25 +147,25 @@ class IosBtrcMonthlyReportController extends Controller
             2,  // Bangla Trac Communications Limited
             4,  // Mir Telecom Limited
             5,  // NovoTel Limited
-            6,  // Global Voice Telecom Limited
-            7,  // BG Tel Limited
-            8,  // HRC Technologies Limited
+            //6,  // Global Voice Telecom Limited
+            //7,  // BG Tel Limited
+            //8,  // HRC Technologies Limited
             //9,  // Roots Communication Limited
             10,  // 1Asia Alliance Gateway Limited
-            11,  // Unique Infoway Limited
+            //11,  // Unique Infoway Limited
             12,  // Sigma Telecom Limited
-            14,  // DBL Telecom Limited
+            //14,  // DBL Telecom Limited
             //16,  // First Communication Limited
-            19,  // MOS5 Tel Limited
+            //19,  // MOS5 Tel Limited
             20,  // Cel Telecom Limited
             21,  // Ranks Telecom Limited
             22,  // Bangla Tel Limited
-            23,  // SM Communication Limited
+            //23,  // SM Communication Limited
             24,  // Platinum Communications Limited
             26,  // Bangladesh International Gateway Limited
-            27,  // Digicon Telecommunication Limited
+            //27,  // Digicon Telecommunication Limited
             28,  // Venus Telecom Limited
-            30,  // Songbird Telecom Limited
+            //30,  // Songbird Telecom Limited
             118, // LR Telecom Limited
         ];
 
@@ -231,19 +206,27 @@ class IosBtrcMonthlyReportController extends Controller
     private function setReportHeading($heading)
     {
         foreach ($heading as $key => $value) {
-            $this->excel->getActiveSheet()->setCellValue(self::CELL_NAME . ($key + 1), $value);
-            $this->cellMerge($this->excel, self::CELL_NAME . ($key + 1), chr(self::A_ASCII_VALUE + 5) . ($key + 1));
+            $startCoordinate = self::CELL_NAME . ($key + 1);
+            $endCoordinate = chr(self::A_ASCII_VALUE + 5) . ($key + 1);
+            $this->excel->getActiveSheet()->setCellValue($startCoordinate, $value);
+            $this->cellMerge($this->excel, $startCoordinate, $endCoordinate);
+            $this->fontBold($this->excel, $startCoordinate, $endCoordinate);
         }
     }
 
     private function setTableHeading($tableHeading)
     {
-        foreach ($tableHeading as $i => $heading) {
-            $this->excel->getActiveSheet()->setCellValue(chr(self::A_ASCII_VALUE + $i) . self::TABLE_HEADER_CELL, $heading);
+        foreach ($tableHeading as $key => $heading) {
+            $startCoordinate = chr(self::A_ASCII_VALUE + $key) . self::TABLE_HEADER_CELL;
+            $endCoordinate = chr(self::A_ASCII_VALUE + 5) . self::TABLE_HEADER_CELL; // 1 for wrapping total section
+            $this->excel->getActiveSheet()->setCellValue($startCoordinate, $heading);
+            $this->fontBold($this->excel, $startCoordinate, $endCoordinate);
         }
     }
 
     /**
+     * Sets data in the spreadsheet.
+     *
      * @param $activeSheet
      * @param $startDate
      * @param $endDate
@@ -252,31 +235,129 @@ class IosBtrcMonthlyReportController extends Controller
      * @return Spreadsheet
      * @throws Exception
      */
-    public function dataSetter($activeSheet, $startDate, $endDate, $direction, $queryResult): Spreadsheet
+    private function setDataInSpreadsheet($activeSheet, $startDate, $endDate, $direction, $queryResult): Spreadsheet
     {
+        // Set the active sheet index
+        $this->excel->setActiveSheetIndex($activeSheet);
 
-        $this->excel->setActiveSheetIndex($activeSheet); //Default active worksheet.
+        // Set report and table headings
+        $this->setReportAndTableHeadings($startDate, $endDate, $direction);
 
-        $this->setReportHeading($this->reportHeading($startDate, $endDate, $direction));
-        $this->setTableHeading($this->tableHeading());
+        // Populate data from query result
+        $this->populateData($queryResult);
 
+        // Calculate and set totals
+        $lastCell = $this->calculateAndSetTotals($queryResult);
+
+        // Format the spreadsheet
+        $this->formatSpreadsheet($lastCell);
+
+        // Set default active sheet
+        $this->excel->setActiveSheetIndex(0);
+
+        // Return the spreadsheet object
+        return $this->excel;
+    }
+
+    /**
+     * Sets report and table headings.
+     *
+     * @param $startDate
+     * @param $endDate
+     * @param $direction
+     */
+    private function setReportAndTableHeadings($startDate, $endDate, $direction)
+    {
+        $dir = ($direction == 1) ? 'Int. Incoming' : 'Int. Outgoing';
+
+        // Set report heading
+        $this->setReportHeading($this->reportHeading($startDate, $endDate, $dir));
+
+        // Set table heading
+        $this->setTableHeading($this->tableHeading($direction));
+    }
+
+    /**
+     * Populates data from query result.
+     *
+     * @param array $queryResult
+     */
+    private function populateData(array $queryResult)
+    {
+        // Get database schema
         $schema = $this->dbSchema();
-        $total_schema = count($this->dbSchema());
+        $totalSchema = count($schema);
 
+        // Populate data row by row
         foreach ($queryResult['data'] as $key => $data) {
-            for($i=0; $i < $total_schema; $i++){
-                $sch = (string) $schema[$i];
-                $this->excel->getActiveSheet()->setCellValue(chr(self::A_ASCII_VALUE+$i).(self::REPORT_FIRST_CELL+$key), $data->$sch);
+            for ($i = 0; $i < $totalSchema; $i++) {
+                $fieldName = (string) $schema[$i];
+                $cellCoordinate = chr(self::A_ASCII_VALUE + $i) . (self::REPORT_FIRST_CELL + $key);
+                $this->excel->getActiveSheet()->setCellValue($cellCoordinate, $data->$fieldName);
+            }
+        }
+    }
+
+    /**
+     * Calculates and sets totals.
+     *
+     * @param $queryResult
+     * @return int
+     */
+    private function calculateAndSetTotals($queryResult): int
+    {
+        // Calculate total cells
+        $beforeLastCell = self::TABLE_HEADER_CELL + $queryResult['total_count'];
+        $lastCell = $beforeLastCell + 1;
+
+        // Calculate and set formulas for totals
+        $columnsToSum = ['A', 'D', 'E', 'F'];
+        foreach ($columnsToSum as $key => $column) {
+            $range = $column . self::REPORT_FIRST_CELL . ':' . $column . $beforeLastCell;
+            if($key == 0) {
+                $this->excel->getActiveSheet()->setCellValue($column . $lastCell, 'Total');
+            } else {
+                $this->excel->getActiveSheet()->setCellValue($column . $lastCell, '=SUBTOTAL(9,' . $range . ')'); // 9 is sum
             }
         }
 
-        $this->columnAutoresize($this->excel, chr(self::A_ASCII_VALUE), chr(self::A_ASCII_VALUE + 5));
-        //$this->allBorders($this->excel, chr(self::A_ASCII_VALUE) . self::TABLE_HEADER_CELL, chr(self::A_ASCII_VALUE + 5) . $queryResult['total_count']);
+        return $lastCell;
+    }
 
+    /**
+     * Formats the spreadsheet.
+     *
+     * @param $lastCell
+     */
+    private function formatSpreadsheet($lastCell)
+    {
+        // Calculate column coordinates
+        $cell_a = chr(self::A_ASCII_VALUE); // Start column
+        $cell_f = chr(self::A_ASCII_VALUE + 5); // End column
 
-        $this->excel->setActiveSheetIndex(0); //Default active worksheet.
+        // Autoresize columns
+        $this->columnAutoresize($this->excel, $cell_a, $cell_f);
 
-        return $this->excel;
+        // Merge cells and apply formatting
+        $this->cellMerge($this->excel, $cell_a . $lastCell, 'C' . $lastCell); // Merge cells from A to C of the last row
+        $this->fontBold($this->excel, $cell_a . $lastCell, $cell_f . $lastCell); // Bold font for cells from A to F of the last row
+        $this->formatNumber($this->excel, 'D' . self::REPORT_FIRST_CELL, $cell_f . $lastCell, 1); // Format numbers in cells from D to F starting from the first row of data
+        $this->allBorders($this->excel, $cell_a . self::TABLE_HEADER_CELL, $cell_f . $lastCell); // Apply borders to the entire table area
+
+    }
+
+    protected function authors($excelInstance)
+    {
+        //Creator Information
+        $authorsInfo = AuthorInformation::authors();
+        $excelInstance->getProperties()
+                    ->setCreator($authorsInfo['creator'])
+                    ->setLastModifiedBy($authorsInfo['creator'])
+                    ->setTitle($authorsInfo['sTitle'])
+                    ->setSubject($authorsInfo['sSubject'])
+                    ->setDescription($authorsInfo['sDescription'])
+                    ->setKeywords($authorsInfo['sKeywords'])
+                    ->setCategory($authorsInfo['sCategory']);
     }
 
 }
