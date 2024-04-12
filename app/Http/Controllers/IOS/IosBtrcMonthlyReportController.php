@@ -53,8 +53,8 @@ class IosBtrcMonthlyReportController extends Controller
     private function tableHeading($direction): array
     {
         return ($direction == 1) ?
-            ['Month', 'IGW Name', 'Out Company', 'No of Call', 'Dur (Min)', 'Bill Dur (Min)'] :
-            ['Month', 'In Company', 'IGW Name', 'No of Call', 'Dur (Min)', 'Bill Dur (Min)'];
+            ['Month', 'In company', 'Out Company', 'No of Call', 'Dur (Min)', 'Bill Dur (Min)'] :
+            ['Month', 'In Company', 'Out Company', 'No of Call', 'Dur (Min)', 'Bill Dur (Min)'];
     }
 
     /**
@@ -78,10 +78,10 @@ class IosBtrcMonthlyReportController extends Controller
     private function workSheetName(): array
     {
         return [
-            'in-icx',
-            'in-ans',
-            'out-icx',
-            'out-ans'
+            'incoming-icx-wise',
+            'incoming-ans-wise',
+            'outgoing-icx-wise',
+            'outgoing-ans-wise'
         ];
     }
 
