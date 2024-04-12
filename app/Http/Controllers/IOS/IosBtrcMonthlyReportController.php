@@ -36,14 +36,14 @@ class IosBtrcMonthlyReportController extends Controller
     /**
      * @return string[]
      */
-    private function reportHeading($startDate, $endDate, $direction): array
+    private function reportHeading($fromDate, $toDate, $direction): array
     {
         return [
             'Traffic Summary',
-            'From Date: ' . $startDate,
-            'To Date: ' . $endDate,
+            'From Date: ' . Carbon::parse($fromDate)->format('d-M-Y'),
+            'To Date: ' . Carbon::parse($toDate)->format('d-M-Y'),
             'Direction: ' . $direction,
-            'Month: ' . Carbon::parse($startDate)->format('F Y')
+            'Month: ' . Carbon::parse($fromDate)->format('F - Y')
         ];
     }
 
@@ -85,20 +85,62 @@ class IosBtrcMonthlyReportController extends Controller
         ];
     }
 
+
     /**
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function index()
     {
-        $startDate = '20240301';
-        $endDate = '20240331';
+        // Get the first date of the previous month and format it as 'Ymd'
+        $firstDateOfPreviousMonth = '20240101';
+
+        // Get the last date of the previous month and format it as 'Ymd'
+        $lastDateOfPreviousMonth = '20240131';
+
+        $this->generateExcel($firstDateOfPreviousMonth, $lastDateOfPreviousMonth);
+
+        dump($firstDateOfPreviousMonth . ' ' . $lastDateOfPreviousMonth );
+        dd('test');
+    }
+
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function create()
+    {
+        request()->validate([
+            'fromDate'  => 'required',
+            'toDate'    => 'required',
+        ]);
+
+        $fromDate  = Carbon::parse(request()->fromDate)->format('Ymd');
+        $toDate    = Carbon::parse(request()->toDate)->format('Ymd');
+
+        $this->generateExcel($fromDate, $toDate);
+
+    }
+
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function generateExcel($fromDate = null, $toDate = null, $scheduleGenerateType = false): bool
+    {
+
+        // Get the first date of the previous month and format it as 'Ymd'
+        $fromDate = $fromDate ?? Carbon::now()->subMonth()->firstOfMonth()->format('Ymd');
+
+        // Get the last date of the previous month and format it as 'Ymd'
+        $toDate = $toDate ?? Carbon::now()->subMonth()->lastOfMonth()->format('Ymd');
+
 
         foreach ($this->companies() as $companyId => $companyName) {
             // Reinitialize $this->excel for each iteration
             $this->excel = new Spreadsheet();
 
-            $result = $this->queries($startDate, $endDate, $companyId);
+            $result = $this->queries($fromDate, $toDate, $companyId);
 
             $sheetName = $this->workSheetName();
             $hasData = false; // Flag to track if any data is found
@@ -109,7 +151,7 @@ class IosBtrcMonthlyReportController extends Controller
                     $hasData = true; // Set flag to true if data is found
                     $direction = ($i < 2) ? '1' : '2'; // Direction
                     ($i == 0) ? $this->excel->getActiveSheet()->setTitle($sheetName[$i]) : $this->excel->createSheet()->setTitle($sheetName[$i]);
-                    $this->setDataInSpreadsheet($i, $startDate, $endDate, $direction , $result[$i]);
+                    $this->setDataInSpreadsheet($i, $fromDate, $toDate, $direction , $result[$i]);
                 }
             }
 
@@ -123,9 +165,17 @@ class IosBtrcMonthlyReportController extends Controller
             // Get the previous month name and year in the "Month-Year" format
             $previousMonth = Carbon::now()->subMonth()->format('F-Y');
             $writer = new Xlsx($this->excel);
-            $writer->save(public_path().'/platform/ios/btrcmonthlyreport/icxandanswise/' . $companyName .', '. $previousMonth . '.xlsx');
+
+            if($scheduleGenerateType) {
+                $writer->save(public_path().'/platform/ios/schedule/btrcmonthlyreport/icxandanswise/' . $companyName .', '. $previousMonth . '.xlsx');
+
+            } else {
+                $writer->save(public_path().'/platform/ios/btrcmonthlyreport/icxandanswise/' . $companyName .', '. $previousMonth . '.xlsx');
+            }
+
         }
-        dd('test');
+
+        return true;
     }
 
     /**
@@ -187,18 +237,18 @@ class IosBtrcMonthlyReportController extends Controller
     }
 
     /**
-     * @param $startDate
-     * @param $endDate
+     * @param $fromDate
+     * @param $toDate
      * @param $companyId
      * @return array
      */
-    private function queries($startDate, $endDate, $companyId): array
+    private function queries($fromDate, $toDate, $companyId): array
     {
 
-        $icxIncoming = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $startDate, $endDate, 1, $companyId, 'OutCompanyID');
-        $ansIncoming = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $startDate, $endDate, 1, $companyId, 'ANSID');
-        $icxOutgoing = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $startDate, $endDate, 2, $companyId, 'InCompanyID');
-        $ansOutgoing = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $startDate, $endDate, 2, $companyId, 'ANSID');
+        $icxIncoming = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $fromDate, $toDate, 1, $companyId, 'OutCompanyID');
+        $ansIncoming = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $fromDate, $toDate, 1, $companyId, 'ANSID');
+        $icxOutgoing = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $fromDate, $toDate, 2, $companyId, 'InCompanyID');
+        $ansOutgoing = $this->fetchIcxAndAnsData('CallSummary', 'TrafficDate', $fromDate, $toDate, 2, $companyId, 'ANSID');
 
         return [$icxIncoming, $ansIncoming, $icxOutgoing, $ansOutgoing];
     }
@@ -228,20 +278,20 @@ class IosBtrcMonthlyReportController extends Controller
      * Sets data in the spreadsheet.
      *
      * @param $activeSheet
-     * @param $startDate
-     * @param $endDate
+     * @param $fromDate
+     * @param $toDate
      * @param $direction
      * @param $queryResult
      * @return Spreadsheet
      * @throws Exception
      */
-    private function setDataInSpreadsheet($activeSheet, $startDate, $endDate, $direction, $queryResult): Spreadsheet
+    private function setDataInSpreadsheet($activeSheet, $fromDate, $toDate, $direction, $queryResult): Spreadsheet
     {
         // Set the active sheet index
         $this->excel->setActiveSheetIndex($activeSheet);
 
         // Set report and table headings
-        $this->setReportAndTableHeadings($startDate, $endDate, $direction);
+        $this->setReportAndTableHeadings($fromDate, $toDate, $direction);
 
         // Populate data from query result
         $this->populateData($queryResult);
@@ -262,16 +312,16 @@ class IosBtrcMonthlyReportController extends Controller
     /**
      * Sets report and table headings.
      *
-     * @param $startDate
-     * @param $endDate
+     * @param $fromDate
+     * @param $toDate
      * @param $direction
      */
-    private function setReportAndTableHeadings($startDate, $endDate, $direction)
+    private function setReportAndTableHeadings($fromDate, $toDate, $direction)
     {
         $dir = ($direction == 1) ? 'Int. Incoming' : 'Int. Outgoing';
 
         // Set report heading
-        $this->setReportHeading($this->reportHeading($startDate, $endDate, $dir));
+        $this->setReportHeading($this->reportHeading($fromDate, $toDate, $dir));
 
         // Set table heading
         $this->setTableHeading($this->tableHeading($direction));

@@ -8,6 +8,7 @@ use App\Console\Commands\IgwAndIosCommands\IofInOutDayWiseReportCommand;
 use App\Console\Commands\IgwAndIosCommands\IosAndIgwClientsReportCommand;
 use App\Console\Commands\IgwOperatorSwitchCommands\IosBtrcReportCommand;
 use App\Console\Commands\IgwOperatorSwitchCommands\IOSDailyCallSummaryReportCommand;
+use App\Console\Commands\IgwOperatorSwitchCommands\GenerateIosBtrcMonthlyReportCommand;
 use App\Console\Commands\InternationalGatewayCommands\IgwCallSummaryReportCommand;
 use App\Console\Commands\InternationalGatewayCommands\IosDayWiseReportFromIgwCommand;
 use App\Console\Commands\InternationalGatewayCommands\OSWiseReportCommand;
@@ -33,8 +34,8 @@ class Kernel extends ConsoleKernel
         IosAndIgwClientsReportCommand::class,
         IosDayWiseReportFromIgwCommand::class,
         OSWiseReportCommand::class,
-        IgwCallSummaryReportCommand::class
-
+        IgwCallSummaryReportCommand::class,
+        GenerateIosBtrcMonthlyReportCommand::class,
     ];
 
     /**
@@ -46,7 +47,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Process and schedule commands based on schedules defined in the database
-        $this->processSchedules($schedule);
+        //$this->processSchedules($schedule);
+        $schedule->command('ios:btrc-monthly-report')->everyMinute(); // Testing
     }
 
     /**
