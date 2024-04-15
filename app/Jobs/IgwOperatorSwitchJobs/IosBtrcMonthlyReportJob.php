@@ -3,7 +3,6 @@
 namespace App\Jobs\IgwOperatorSwitchJobs;
 
 use App\Http\Controllers\IOS\IosBtrcMonthlyReportController;
-use App\Http\Controllers\IOS\IOSDailyReportController;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;

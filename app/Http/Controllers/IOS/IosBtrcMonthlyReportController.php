@@ -93,14 +93,17 @@ class IosBtrcMonthlyReportController extends Controller
     public function index()
     {
         // Get the first date of the previous month and format it as 'Ymd'
-        $firstDateOfPreviousMonth = '20240101';
+        // $firstDateOfPreviousMonth = '20240101';
 
         // Get the last date of the previous month and format it as 'Ymd'
-        $lastDateOfPreviousMonth = '20240131';
+        // $lastDateOfPreviousMonth = '20240131';
 
-        $this->generateExcel($firstDateOfPreviousMonth, $lastDateOfPreviousMonth);
+        // $this->generateExcel($firstDateOfPreviousMonth, $lastDateOfPreviousMonth);
 
-        dump($firstDateOfPreviousMonth . ' ' . $lastDateOfPreviousMonth );
+        // dump($firstDateOfPreviousMonth . ' ' . $lastDateOfPreviousMonth );
+
+        dd($this->companies());
+
         dd('test');
     }
 
@@ -181,7 +184,7 @@ class IosBtrcMonthlyReportController extends Controller
     /**
      * @return array
      */
-    private function companies(): array
+    public function companies(): array
     {
 
         // Retrieve data from the database
@@ -195,6 +198,7 @@ class IosBtrcMonthlyReportController extends Controller
         // Add the systemId values to be ignored
         $ignoredCompanyIds =  [
             2,  // Bangla Trac Communications Limited
+            3,  // Bangladesh Telecommunications Company Limited
             4,  // Mir Telecom Limited
             5,  // NovoTel Limited
             //6,  // Global Voice Telecom Limited

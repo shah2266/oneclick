@@ -41,7 +41,7 @@ class GenerateIosBtrcMonthlyReportCommand extends Command
     {
         IosBtrcMonthlyReportJob::dispatch()->chain([
             function () {
-                MailPreparedForIosBtrcMonthlyReportJob::dispatch()->delay(1);
+                MailPreparedForIosBtrcMonthlyReportJob::dispatch();
             }
         ]);
     }

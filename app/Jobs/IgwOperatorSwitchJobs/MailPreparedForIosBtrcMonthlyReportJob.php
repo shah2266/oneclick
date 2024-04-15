@@ -16,6 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\IOS\IosBtrcMonthlyReportController;
 
 class MailPreparedForIosBtrcMonthlyReportJob implements ShouldQueue
 {
@@ -38,22 +39,9 @@ class MailPreparedForIosBtrcMonthlyReportJob implements ShouldQueue
      */
     public function handle()
     {
-        $companyNames = array(
-            'First Communication Limited',
-            'Global Voice Telecom Limited',
-            'Songbird Telecom Limited',
-            'BG Tel Limited',
-            'HRC Technologies Limited',
-            'Roots Communication Limited',
-            'Unique Infoway Limited',
-            'Sigma Telecom Limited',
-            'DBL Telecom Limited',
-            'MOS5 Tel Limited',
-            'SM Communication Limited',
-            'Digicon Telecommunication Limited'
-        );
+        $companyNames = new IosBtrcMonthlyReportController();
 
-        foreach ($companyNames as $companyName) {
+        foreach ($companyNames->companies() as $companyName) {
             try {
                 $template = $this->findMailTemplateByName($companyName);
 
