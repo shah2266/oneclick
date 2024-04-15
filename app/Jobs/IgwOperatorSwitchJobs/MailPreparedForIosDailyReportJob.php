@@ -38,15 +38,6 @@ class MailPreparedForIosDailyReportJob implements ShouldQueue
      */
     public function handle()
     {
-        // Commercial email addresses
-//        $toAddresses = ['masum.hasan@btraccl.com'];
-//        $ccAddresses = [
-//            'btraccore@btraccl.com',
-//            'arif.hossain@btraccl.com',
-//            'noc@btraccl.com',
-//            'billing.team@btraccl.com'
-//        ];
-
         $template = $this->findMailTemplate('ios:daily-call-summary');
 
         // File directory

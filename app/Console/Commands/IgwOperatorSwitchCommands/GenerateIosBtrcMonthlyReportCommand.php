@@ -3,6 +3,7 @@
 namespace App\Console\Commands\IgwOperatorSwitchCommands;
 
 use App\Jobs\IgwOperatorSwitchJobs\IosBtrcMonthlyReportJob;
+use App\Jobs\IgwOperatorSwitchJobs\MailPreparedForIosBtrcMonthlyReportJob;
 use Illuminate\Console\Command;
 
 class GenerateIosBtrcMonthlyReportCommand extends Command
@@ -38,6 +39,10 @@ class GenerateIosBtrcMonthlyReportCommand extends Command
      */
     public function handle()
     {
-        IosBtrcMonthlyReportJob::dispatch();
+        IosBtrcMonthlyReportJob::dispatch()->chain([
+            function () {
+                MailPreparedForIosBtrcMonthlyReportJob::dispatch()->delay(1);
+            }
+        ]);
     }
 }

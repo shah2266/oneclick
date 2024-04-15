@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 use App\Models\NoclickCommand;
+use App\Models\NoclickMailTemplate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -102,6 +103,17 @@ trait HandlesMailTemplate {
             ->with('noclickMailTemplate')
             ->firstOrFail()
             ->noclickMailTemplate
+            ->toArray();
+    }
+
+    /**
+     * @param $templateName
+     * @return array
+     */
+    protected function findMailTemplateByName($templateName): array
+    {
+        return NoclickMailTemplate::where('template_name', $templateName)
+            ->firstOrFail()
             ->toArray();
     }
 
