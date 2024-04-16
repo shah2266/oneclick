@@ -1,7 +1,0 @@
-SELECT com.shortName ANSname, SUM(cm.SuccessfulCall) successfullCall, SUM(cm.CallDuration)/60 Dur, ((SUM(cm.CallDuration)/60)/SUM(cm.SuccessfulCall)) as ACD 
-from CallSummary cm, Company com 
-Where cm.TrafficDate between '30 Jan 2021 00:00:00' And '30 Jan 2021 23:59:59' 
-and cm.ReportTrafficDirection=1
-AND cm.ANSID = com.CompanyID
-GROUP BY com.shortName
-ORDER BY com.shortName

@@ -1,4 +1,0 @@
-Header color code: daeef3
-body color: dce6f1
-
-company name: c5d9f1
