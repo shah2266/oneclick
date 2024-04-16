@@ -102,7 +102,7 @@ class IosBtrcMonthlyReportController extends Controller
 
         // dump($firstDateOfPreviousMonth . ' ' . $lastDateOfPreviousMonth );
 
-        dd($this->companies());
+        //dd($this->companies());
 
         dd('test');
     }

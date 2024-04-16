@@ -142,7 +142,7 @@ trait ScheduleProcessing
         $todayDate = Carbon::now()->format('d-M-Y');
 
         // Get the date of the first Monday of the current month
-        $firstMonday = Carbon::now()->firstOfMonth()->next(CarbonInterface::SUNDAY)->format('d-M-Y');
+        $firstMonday = Carbon::now()->firstOfMonth()->next(CarbonInterface::MONDAY)->format('d-M-Y');
 
         // Compare today's date with the date of the first Monday of the current month
         // dump($todayDate . ' vs ' . $firstMonday);
