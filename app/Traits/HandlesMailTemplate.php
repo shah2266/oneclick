@@ -15,10 +15,10 @@ trait HandlesMailTemplate {
     protected function getToAddresses($template): array
     {
 
-        return ['shah.alam@btraccl.com']; // This test email
+        //return ['shah.alam@btraccl.com']; // This test email
 
         // Call the trimExplodedString function with the 'to_email_addresses' value from the template
-        //return $this->trimExplodedString($template['to_email_addresses']); //
+        return $this->trimExplodedString($template['to_email_addresses']); //
     }
 
     /**
@@ -28,10 +28,10 @@ trait HandlesMailTemplate {
     protected function getCcAddresses($template): array
     {
 
-        return ['shah.alam@btraccl.com','shaha2266@gmail.com']; // This test email
+        //return ['shah.alam@btraccl.com','shaha2266@gmail.com']; // This test email
 
         // Call the trimExplodedString function with the 'cc_email_addresses' value from the template
-        //return $this->trimExplodedString($template['cc_email_addresses']);
+        return $this->trimExplodedString($template['cc_email_addresses']);
     }
 
     /**
