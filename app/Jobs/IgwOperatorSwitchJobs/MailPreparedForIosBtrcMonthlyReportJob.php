@@ -50,6 +50,9 @@ class MailPreparedForIosBtrcMonthlyReportJob implements ShouldQueue
 
                 // Get the previous month name and year in the "Month-Year" format
                 $previousMonth = Carbon::now()->subMonth()->format('F-Y');
+
+                $template['subject'] = $template['subject'] . ' - (' . $previousMonth . ')';
+
                 // Ensure the correct directory separator is used
                 $files = glob($directory . DIRECTORY_SEPARATOR . $companyName . ', ' . $previousMonth . '.xlsx');
 

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\IOS;
 use App\Http\Controllers\Controller;
 use App\Models\IofCompany;
 use App\Traits\ExcelDataFormatting;
+use App\Traits\ScheduleProcessing;
 use App\Traits\SQLQueryServices;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use App\Authors\AuthorInformation;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -15,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class IosBtrcMonthlyReportController extends Controller
 {
-    use SQLQueryServices, ExcelDataFormatting;
+    use SQLQueryServices, ExcelDataFormatting, ScheduleProcessing;
 
     const CELL_NAME = 'A';
     const A_ASCII_VALUE = 65;
@@ -102,7 +104,7 @@ class IosBtrcMonthlyReportController extends Controller
 
         // dump($firstDateOfPreviousMonth . ' ' . $lastDateOfPreviousMonth );
 
-        //dd($this->companies());
+         dump($this->companies());
 
         dd('test');
     }
@@ -201,7 +203,7 @@ class IosBtrcMonthlyReportController extends Controller
             3,  // Bangladesh Telecommunications Company Limited
             4,  // Mir Telecom Limited
             5,  // NovoTel Limited
-            //6,  // Global Voice Telecom Limited
+            6,  // Global Voice Telecom Limited
             //7,  // BG Tel Limited
             //8,  // HRC Technologies Limited
             //9,  // Roots Communication Limited

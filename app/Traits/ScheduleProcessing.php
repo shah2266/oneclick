@@ -114,15 +114,13 @@ trait ScheduleProcessing
 
         foreach ($noclickSchedule as $command) {
             $scheduleDays = explode(',', $command->days);
-
             foreach ($scheduleDays as $day) {
                 //$todayDate = '05-Feb-2024';
                 $todayDate = Carbon::now()->format('d-M-Y');
 
                 // Get the date of the first occurrence of the specified day of the current month
-                $firstDay = Carbon::now()->firstOfMonth()->next(Carbon::parse(ucfirst($day))->englishDayOfWeek)->format('d-M-Y');
+                $firstDay = Carbon::now()->firstOfMonth()->next(Carbon::parse(ucfirst($day))->englishDayOfWeek)->addWeeks(2)->format('d-M-Y');
 
-                //dump($todayDate . ' vs ' . $firstDay . ' vs ' . $day);
                 if($todayDate === $firstDay) {
                     $this->scheduleCommand($command, $schedule);
                 }
@@ -142,7 +140,7 @@ trait ScheduleProcessing
         $todayDate = Carbon::now()->format('d-M-Y');
 
         // Get the date of the first Monday of the current month
-        $firstMonday = Carbon::now()->firstOfMonth()->next(CarbonInterface::MONDAY)->format('d-M-Y');
+        $firstMonday = Carbon::now()->firstOfMonth()->next(CarbonInterface::TUESDAY)->addWeeks(2)->format('d-M-Y');
 
         // Compare today's date with the date of the first Monday of the current month
         // dump($todayDate . ' vs ' . $firstMonday);
