@@ -96,14 +96,14 @@ class IosDestinationWiseOutgoingReportController extends Controller
      */
     public function index()
     {
-        // Get the first date of the previous month and format it as 'Ymd'
-        $fromDate = '20240101';
 
-        // Get the last date of the previous month and format it as 'Ymd'
-        $toDate = '20240105';
+        // Set the day to 1 to get the first day of the month
+        $firstDateOfMonth = Carbon::now()->firstOfMonth()->format('Ymd');
+        // Get the current date
+        $currentDate = Carbon::now()->subDays()->format('Ymd');
 
-         dump($this->last_report_column);
-         $this->generateExcel($fromDate, $toDate);
+         dump($firstDateOfMonth . ' - ' . $currentDate);
+         $this->generateExcel($firstDateOfMonth, $currentDate);
 
 
         dd('test');
@@ -116,7 +116,6 @@ class IosDestinationWiseOutgoingReportController extends Controller
      */
     public function generateExcel($fromDate, $toDate, $scheduleGenerateType = false): bool
     {
-
         $result = $this->fetchDestinationWiseDataFromIos('CallSummary', 'TrafficDate', $fromDate, $toDate);
 
         $this->excel->getActiveSheet()->setTitle('Destination_wise_og_report');
