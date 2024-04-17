@@ -16,6 +16,7 @@ use App\Http\Controllers\IOS\BtrcController;
 use App\Http\Controllers\IOS\IosBtrcMonthlyReportController;
 use App\Http\Controllers\IOS\IOSDailyReportController;
 use App\Http\Controllers\IOS\IOSDayWiseDataCrossCheckController;
+use App\Http\Controllers\IOS\IosDestinationWiseOutgoingReportController;
 use App\Http\Controllers\Noclick\NoclickCommandController;
 use App\Http\Controllers\Noclick\NoclickMailTemplateController;
 use App\Http\Controllers\Noclick\NoclickScheduleController;
@@ -39,7 +40,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/develop', [IosBtrcMonthlyReportController::class, 'index']);
+Route::get('/develop', [IosDestinationWiseOutgoingReportController::class, 'index']);
 
 Auth::routes([
     'register' => false,

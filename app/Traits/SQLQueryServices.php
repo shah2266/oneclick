@@ -85,6 +85,64 @@ trait SQLQueryServices
         return ['data' => $data, 'total_count' => $totalCount];
     }
 
+    public function fetchDestinationWiseDataFromIos($table, $dateColumn, $fromDate, $toDate): array
+    {
+
+        $query =
+            /** @lang text */
+        "
+            SELECT
+                CONVERT(VARCHAR(30), cm.$dateColumn, 112) AS 'order_date',
+                CONVERT(VARCHAR(30), cm.$dateColumn, 106) AS 'traffic_date',
+                inCom.ShortName AS 'icx_name',
+                inRoute.RouteName AS 'icx_route_name',
+                outCom.ShortName AS 'igw_name',
+                outRoute.RouteName AS 'igw_route_name',
+                c.CountryName AS 'country',
+                z.ZoneName AS 'destination',
+                cm.InRatedPrefix AS 'destination_code',
+                " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'successful_call',
+                SUM(cm.CallDuration) AS 'duration',
+                SUM(cm.BillDuration) AS 'bill_duration'
+            FROM
+                $table cm,
+                Company inCom,
+                Company outCom,
+                ROUTE inRoute,
+                ROUTE outRoute,
+                Zone z,
+                Country c
+            WHERE
+                cm.$dateColumn BETWEEN '$fromDate 00:00:00' AND '$toDate 23:59:59'
+                AND cm.ReportTrafficDirection = 2
+                AND cm.InCompanyID = inCom.CompanyID
+                AND cm.OutCompanyID = outCom.CompanyID
+                AND cm.IncomingRouteID = inRoute.RouteID
+                AND cm.OutgoingRouteID = outRoute.RouteID
+                AND z.ZoneCode = cm.InRatedPrefix
+                AND z.CountryID = c.CountryID
+            GROUP BY
+                CONVERT(VARCHAR(30), cm.$dateColumn, 112),
+                CONVERT(VARCHAR(30), cm.$dateColumn, 106),
+                inCom.ShortName,
+                inRoute.RouteName,
+                outCom.ShortName,
+                outRoute.RouteName,
+                c.CountryName,
+                z.ZoneName,
+                cm.InRatedPrefix
+            ORDER BY
+            CONVERT(VARCHAR(30), cm.$dateColumn, 112);
+        ";
+
+        $data = $this->QueryExecuted('sqlsrv2', $query);
+
+        // Get the total count
+        $totalCount = count($data);
+
+        return ['data' => $data, 'total_count' => $totalCount];
+    }
+
     /**
      * @param string $connectionName
      * @param string $query

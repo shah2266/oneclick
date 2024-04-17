@@ -5,7 +5,7 @@ namespace App\Http\Controllers\IOS;
 use App\Http\Controllers\Controller;
 use App\Models\IofCompany;
 use App\Traits\ExcelDataFormatting;
-use App\Traits\ScheduleProcessing;
+use App\Traits\ExcelHelper;
 use App\Traits\SQLQueryServices;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -17,12 +17,13 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class IosBtrcMonthlyReportController extends Controller
 {
-    use SQLQueryServices, ExcelDataFormatting, ScheduleProcessing;
+    use SQLQueryServices, ExcelDataFormatting, ExcelHelper;
 
     const CELL_NAME = 'A';
     const A_ASCII_VALUE = 65;
     const TABLE_HEADER_CELL = 7;
     const REPORT_FIRST_CELL = 8;
+    private $last_report_column;
 
     /**
      * @var Spreadsheet
@@ -33,6 +34,7 @@ class IosBtrcMonthlyReportController extends Controller
     public function __construct()
     {
         $this->excel = new Spreadsheet();
+        $this->last_report_column = count($this->dbSchema()) - 1;
     }
 
     /**
@@ -259,26 +261,24 @@ class IosBtrcMonthlyReportController extends Controller
         return [$icxIncoming, $ansIncoming, $icxOutgoing, $ansOutgoing];
     }
 
-    private function setReportHeading($heading)
+    /**
+     * Sets report and table headings.
+     * @param $excelInstance
+     * @param $fromDate
+     * @param $toDate
+     * @param $direction
+     */
+    private function setReportAndTableHeadings($excelInstance, $fromDate, $toDate, $direction)
     {
-        foreach ($heading as $key => $value) {
-            $startCoordinate = self::CELL_NAME . ($key + 1);
-            $endCoordinate = chr(self::A_ASCII_VALUE + 5) . ($key + 1);
-            $this->excel->getActiveSheet()->setCellValue($startCoordinate, $value);
-            $this->cellMerge($this->excel, $startCoordinate, $endCoordinate);
-            $this->fontBold($this->excel, $startCoordinate, $endCoordinate);
-        }
+        $dir = ($direction == 1) ? 'Int. Incoming' : 'Int. Outgoing';
+
+        // Set report heading
+        $this->setReportHeading($excelInstance, self::CELL_NAME, (self::A_ASCII_VALUE + $this->last_report_column), $this->reportHeading($fromDate, $toDate, $dir));
+
+        // Set table heading
+        $this->setTableHeading($excelInstance, self::A_ASCII_VALUE, (self::A_ASCII_VALUE + $this->last_report_column), self::TABLE_HEADER_CELL, $this->tableHeading($dir));
     }
 
-    private function setTableHeading($tableHeading)
-    {
-        foreach ($tableHeading as $key => $heading) {
-            $startCoordinate = chr(self::A_ASCII_VALUE + $key) . self::TABLE_HEADER_CELL;
-            $endCoordinate = chr(self::A_ASCII_VALUE + 5) . self::TABLE_HEADER_CELL; // 1 for wrapping total section
-            $this->excel->getActiveSheet()->setCellValue($startCoordinate, $heading);
-            $this->fontBold($this->excel, $startCoordinate, $endCoordinate);
-        }
-    }
 
     /**
      * Sets data in the spreadsheet.
@@ -293,20 +293,25 @@ class IosBtrcMonthlyReportController extends Controller
      */
     private function setDataInSpreadsheet($activeSheet, $fromDate, $toDate, $direction, $queryResult): Spreadsheet
     {
+        $a_ascii_value = self::A_ASCII_VALUE;
+        $report_first_cell = self::REPORT_FIRST_CELL;
+        $tbl_header_cell = self::TABLE_HEADER_CELL;
+
         // Set the active sheet index
-        $this->excel->setActiveSheetIndex($activeSheet);
+        $this->activeSheet($this->excel, $activeSheet);
 
         // Set report and table headings
-        $this->setReportAndTableHeadings($fromDate, $toDate, $direction);
+        $this->setReportAndTableHeadings($this->excel, $fromDate, $toDate, $direction);
 
         // Populate data from query result
-        $this->populateData($queryResult);
+        $this->populateData($this->excel, $a_ascii_value, $report_first_cell, $this->dbSchema(), $queryResult['data']);
 
         // Calculate and set totals
-        $lastCell = $this->calculateAndSetTotals($queryResult);
+        $columns = ['A', 'D', 'E', 'F'];
+        $lastCell = $this->calculateAndSetTotals($this->excel,$tbl_header_cell, $report_first_cell, $columns , $queryResult['total_count']);
 
         // Format the spreadsheet
-        $this->formatSpreadsheet($lastCell);
+        $this->formatSpreadsheet($this->excel, $a_ascii_value, ($a_ascii_value + $this->last_report_column), $tbl_header_cell, $report_first_cell, $lastCell, 'C', 'D');
 
         // Set default active sheet
         $this->excel->setActiveSheetIndex(0);
@@ -314,106 +319,4 @@ class IosBtrcMonthlyReportController extends Controller
         // Return the spreadsheet object
         return $this->excel;
     }
-
-    /**
-     * Sets report and table headings.
-     *
-     * @param $fromDate
-     * @param $toDate
-     * @param $direction
-     */
-    private function setReportAndTableHeadings($fromDate, $toDate, $direction)
-    {
-        $dir = ($direction == 1) ? 'Int. Incoming' : 'Int. Outgoing';
-
-        // Set report heading
-        $this->setReportHeading($this->reportHeading($fromDate, $toDate, $dir));
-
-        // Set table heading
-        $this->setTableHeading($this->tableHeading($direction));
-    }
-
-    /**
-     * Populates data from query result.
-     *
-     * @param array $queryResult
-     */
-    private function populateData(array $queryResult)
-    {
-        // Get database schema
-        $schema = $this->dbSchema();
-        $totalSchema = count($schema);
-
-        // Populate data row by row
-        foreach ($queryResult['data'] as $key => $data) {
-            for ($i = 0; $i < $totalSchema; $i++) {
-                $fieldName = (string) $schema[$i];
-                $cellCoordinate = chr(self::A_ASCII_VALUE + $i) . (self::REPORT_FIRST_CELL + $key);
-                $this->excel->getActiveSheet()->setCellValue($cellCoordinate, $data->$fieldName);
-            }
-        }
-    }
-
-    /**
-     * Calculates and sets totals.
-     *
-     * @param $queryResult
-     * @return int
-     */
-    private function calculateAndSetTotals($queryResult): int
-    {
-        // Calculate total cells
-        $beforeLastCell = self::TABLE_HEADER_CELL + $queryResult['total_count'];
-        $lastCell = $beforeLastCell + 1;
-
-        // Calculate and set formulas for totals
-        $columnsToSum = ['A', 'D', 'E', 'F'];
-        foreach ($columnsToSum as $key => $column) {
-            $range = $column . self::REPORT_FIRST_CELL . ':' . $column . $beforeLastCell;
-            if($key == 0) {
-                $this->excel->getActiveSheet()->setCellValue($column . $lastCell, 'Total');
-            } else {
-                $this->excel->getActiveSheet()->setCellValue($column . $lastCell, '=SUBTOTAL(9,' . $range . ')'); // 9 is sum
-            }
-        }
-
-        return $lastCell;
-    }
-
-    /**
-     * Formats the spreadsheet.
-     *
-     * @param $lastCell
-     */
-    private function formatSpreadsheet($lastCell)
-    {
-        // Calculate column coordinates
-        $cell_a = chr(self::A_ASCII_VALUE); // Start column
-        $cell_f = chr(self::A_ASCII_VALUE + 5); // End column
-
-        // Autoresize columns
-        $this->columnAutoresize($this->excel, $cell_a, $cell_f);
-
-        // Merge cells and apply formatting
-        $this->cellMerge($this->excel, $cell_a . $lastCell, 'C' . $lastCell); // Merge cells from A to C of the last row
-        $this->fontBold($this->excel, $cell_a . $lastCell, $cell_f . $lastCell); // Bold font for cells from A to F of the last row
-        $this->formatNumber($this->excel, 'D' . self::REPORT_FIRST_CELL, $cell_f . $lastCell, 1); // Format numbers in cells from D to F starting from the first row of data
-        $this->allBorders($this->excel, $cell_a . self::TABLE_HEADER_CELL, $cell_f . $lastCell); // Apply borders to the entire table area
-
-    }
-
-    protected function authors($excelInstance)
-    {
-        //Creator Information
-        $authorsInfo = AuthorInformation::authors();
-        $excelInstance->getProperties()
-                    ->setCreator($authorsInfo['creator'])
-                    ->setLastModifiedBy($authorsInfo['creator'])
-                    ->setTitle($authorsInfo['sTitle'])
-                    ->setSubject($authorsInfo['sSubject'])
-                    ->setDescription($authorsInfo['sDescription'])
-                    ->setKeywords($authorsInfo['sKeywords'])
-                    ->setCategory($authorsInfo['sCategory']);
-    }
-
 }
