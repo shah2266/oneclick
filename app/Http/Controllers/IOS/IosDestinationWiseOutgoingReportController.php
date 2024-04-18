@@ -24,6 +24,7 @@ class IosDestinationWiseOutgoingReportController extends Controller
     const TABLE_HEADER_CELL = 7;
     const REPORT_FIRST_CELL = 8;
     private $last_report_column;
+    const CHUNK_SIZE = 10000;
 
     /**
      * @var Spreadsheet
@@ -98,13 +99,16 @@ class IosDestinationWiseOutgoingReportController extends Controller
     {
 
         // Set the day to 1 to get the first day of the month
+        //$firstDateOfMonth = Carbon::now()->firstOfMonth()->format('d M Y');
         $firstDateOfMonth = Carbon::now()->firstOfMonth()->format('Ymd');
+
         // Get the current date
+        //$currentDate = Carbon::now()->subDays()->format('d M Y');
         $currentDate = Carbon::now()->subDays()->format('Ymd');
+        //$currentDate = '10 Apr 2024';
 
-         dump($firstDateOfMonth . ' - ' . $currentDate);
+         //dd($firstDateOfMonth . ' - ' . $currentDate);
          $this->generateExcel($firstDateOfMonth, $currentDate);
-
 
         dd('test');
     }
@@ -117,6 +121,7 @@ class IosDestinationWiseOutgoingReportController extends Controller
     public function generateExcel($fromDate, $toDate, $scheduleGenerateType = false): bool
     {
         $result = $this->fetchDestinationWiseDataFromIos('CallSummary', 'TrafficDate', $fromDate, $toDate);
+        //$result = $this->fetchDestinationWiseDataFromIos('DestinationWiseOutgoingReport', 'traffic_date', $fromDate, $toDate);
 
         $this->excel->getActiveSheet()->setTitle('Destination_wise_og_report');
         $this->setDataInSpreadsheet(0, $fromDate, $toDate, 2 , $result);
@@ -170,8 +175,17 @@ class IosDestinationWiseOutgoingReportController extends Controller
         // Set report and table headings
         $this->setReportAndTableHeadings($this->excel, $fromDate, $toDate, $direction);
 
-        // Populate data from query result
-        $this->populateData($this->excel, $a_ascii_value, $report_first_cell, $this->dbSchema(), $queryResult['data']);
+        // Split data into chunks and write to Excel
+        $startIndex = 0;
+
+        foreach (array_chunk($queryResult['data'], self::CHUNK_SIZE) as $chunk) {
+            set_time_limit(600);
+            //$this->populateData($chunk);
+            // Populate data from query result
+            $this->populateData($this->excel, $a_ascii_value, $report_first_cell + $startIndex, $this->dbSchema(), $chunk);
+            // Update the starting index for the next chunk
+            $startIndex += count($chunk);
+        }
 
         // Calculate and set totals
         $columns = ['A', 'I', 'J', 'K'];

@@ -87,7 +87,7 @@ trait SQLQueryServices
 
     public function fetchDestinationWiseDataFromIos($table, $dateColumn, $fromDate, $toDate): array
     {
-
+        //$query = /** @lang text */ "SELECT * FROM $table WHERE traffic_date BETWEEN '$fromDate' AND '$toDate' ORDER BY $dateColumn";
         $query =
             /** @lang text */
         "
