@@ -104,8 +104,8 @@ class IosDestinationWiseOutgoingReportController extends Controller
 
         // Get the current date
         //$currentDate = Carbon::now()->subDays()->format('d M Y');
-        $currentDate = Carbon::now()->subDays()->format('Ymd');
-        //$currentDate = '10 Apr 2024';
+        //$currentDate = Carbon::now()->subDays()->format('Ymd');
+        $currentDate = '20240401';
 
          //dd($firstDateOfMonth . ' - ' . $currentDate);
          $this->generateExcel($firstDateOfMonth, $currentDate);

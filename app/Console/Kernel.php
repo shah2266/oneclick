@@ -47,8 +47,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Process and schedule commands based on schedules defined in the database
-        $this->processSchedules($schedule);
-        //$schedule->command('ios:btrc-monthly-report')->everyMinute(); // Testing
+        (env('APP_ENV') !== 'local') ? $this->processSchedules($schedule) : $schedule->command('ios:btrc-monthly-report')->everyMinute();
     }
 
     /**

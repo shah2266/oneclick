@@ -102,8 +102,8 @@ trait SQLQueryServices
                 z.ZoneName AS 'destination',
                 cm.InRatedPrefix AS 'destination_code',
                 " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'successful_call',
-                SUM(cm.CallDuration) AS 'duration',
-                SUM(cm.BillDuration) AS 'bill_duration'
+                SUM(cm.CallDuration) / 60 AS 'duration',
+                SUM(cm.BillDuration) / 60 AS 'bill_duration'
             FROM
                 $table cm,
                 Company inCom,
