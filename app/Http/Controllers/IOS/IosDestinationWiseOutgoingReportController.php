@@ -104,8 +104,8 @@ class IosDestinationWiseOutgoingReportController extends Controller
 
         // Get the current date
         //$currentDate = Carbon::now()->subDays()->format('d M Y');
-        //$currentDate = Carbon::now()->subDays()->format('Ymd');
-        $currentDate = '20240401';
+        $currentDate = Carbon::now()->subDays()->format('Ymd');
+        //$currentDate = '10 Apr 2024';
 
          //dd($firstDateOfMonth . ' - ' . $currentDate);
          $this->generateExcel($firstDateOfMonth, $currentDate);
@@ -132,10 +132,10 @@ class IosDestinationWiseOutgoingReportController extends Controller
         $writer = new Xlsx($this->excel);
 
         if($scheduleGenerateType) {
-            $writer->save(public_path().'/platform/ios/schedule/destinationwisereport/destination_wise_og_report_from_ios.xlsx');
+            $writer->save(public_path().'/platform/ios/schedule/destinationwisereport/ios_des_report_'.$fromDate.'_'.$toDate.'.xlsx');
 
         } else {
-            $writer->save(public_path().'/platform/ios/destinationwisereport/destination_wise_og_report_from_ios.xlsx');
+            $writer->save(public_path().'/platform/ios/destinationwisereport/ios_des_report_'.$fromDate.'_'.$toDate.'.xlsx');
         }
 
         return true;
