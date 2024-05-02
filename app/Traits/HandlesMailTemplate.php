@@ -15,7 +15,7 @@ trait HandlesMailTemplate {
     protected function getToAddresses($template): array
     {
         //return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['to_email_addresses']) : ['shah.alam@btraccl.com'];
-        return ['shah.alam@btraccl.com'];
+        return $this->trimExplodedString($template['to_email_addresses']);
     }
 
     /**
@@ -26,7 +26,7 @@ trait HandlesMailTemplate {
     {
         // Call the trimExplodedString function with the 'cc_email_addresses' value from the template
         //return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['cc_email_addresses']) : ['shah.alam@btraccl.com','shaha2266@gmail.com']; // This test email
-        return ['shah.alam@btraccl.com','shaha2266@gmail.com'];
+        return $this->trimExplodedString($template['cc_email_addresses']);
     }
 
     /**
