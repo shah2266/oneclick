@@ -3,6 +3,7 @@
 namespace App\Jobs\IgwAndIosJobs;
 
 use App\Http\Controllers\IGWANDIOS\ComparisonReportController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class ComparisonReportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -36,10 +37,10 @@ class ComparisonReportJob implements ShouldQueue
      */
     public function handle()
     {
-        $date = Carbon::yesterday()->format('Ymd');
+        list($fromDate, $toDate) = $this->setReportDateRange();
         $report = new ComparisonReportController();
-        $report->incomingReport($date, $date,true);
-        $report->outgoingReport($date, $date,true);
+        $report->incomingReport($fromDate, $toDate,true);
+        $report->outgoingReport($fromDate, $toDate,true);
         Log::channel('noclick')->info('Generated IGW and IOS comparison report at:' . now());
     }
 }

@@ -45,6 +45,26 @@ trait ScheduleProcessing
     }
 
     /**
+     * Schedule the command associated with a schedule at the specified time.
+     * @param mixed $schedule
+     * @return void
+     */
+    protected function scheduleCommand($ncs, $schedule)
+    {
+        $command = $ncs->noclickCommand->command;
+        $time = Carbon::parse($ncs->time)->isoFormat('HH:mm');
+
+        $manualDateSet = '01-May-2024'; // Use yesterday date
+        if($manualDateSet === Carbon::yesterday()->format('d-M-Y')) {
+            $schedule->command($command)->everyMinute(); // This is for testing
+        }
+
+
+        // Schedule the command using Laravel scheduler
+        $schedule->command($command)->dailyAt($time);
+    }
+
+    /**
      * Process holiday schedules and schedule the command.
      * @return void
      */
@@ -145,27 +165,6 @@ trait ScheduleProcessing
         // Compare today's date with the date of the first Monday of the current month
         // dump($todayDate . ' vs ' . $firstMonday);
         return $todayDate === $firstMonday;
-    }
-
-
-    /**
-     * Schedule the command associated with a schedule at the specified time.
-     * @param mixed $schedule
-     * @return void
-     */
-    protected function scheduleCommand($ncs, $schedule)
-    {
-        $command = $ncs->noclickCommand->command;
-        $time = Carbon::parse($ncs->time)->isoFormat('HH:mm');
-
-        $manualDateSet = '09-Mar-2024'; // Use yesterday date
-        if($manualDateSet === Carbon::yesterday()->format('d-M-Y')) {
-            $schedule->command($command)->everyMinute(); // This is for testing
-        }
-
-
-        // Schedule the command using Laravel scheduler
-        $schedule->command($command)->dailyAt($time);
     }
 
     /**

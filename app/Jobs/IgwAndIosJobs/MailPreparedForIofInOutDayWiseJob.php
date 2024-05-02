@@ -40,9 +40,10 @@ class MailPreparedForIofInOutDayWiseJob implements ShouldQueue
     {
         $template = $this->findMailTemplate('both:iof-in-out-report');
         $files = glob(public_path() . DIRECTORY_SEPARATOR . 'platform\igwandios\iof\schedule\inoutbound' . DIRECTORY_SEPARATOR . '*.xlsx');
-        $date = Carbon::yesterday()->format('Ymd');
+
+        list($fromDate, $toDate) = $this->setReportDateRange();
         $report = new IofInOutBoundReportController();
-        $data = $report->dataAttachedInMailBody($date);
+        $data = $report->dataAttachedInMailBody($toDate);
 
         //Only process yesterday files
         $foundFiles = $this->findFilesByNeedle($files);

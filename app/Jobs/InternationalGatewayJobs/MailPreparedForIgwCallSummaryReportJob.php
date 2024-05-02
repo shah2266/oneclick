@@ -45,10 +45,10 @@ class MailPreparedForIgwCallSummaryReportJob implements ShouldQueue
 
         //Only process yesterday files
         $foundFiles = $this->findFilesByNeedle($files);
+        list($fromDate, $toDate) = $this->setReportDateRange();
 
-        $date = Carbon::yesterday()->format('Ymd');
         $report = new CallSummaryController();
-        $data = $report->dataAttachedInMailBody($date, $date);
+        $data = $report->dataAttachedInMailBody($fromDate, $toDate);
 
         //Log::info("Directory: {$this->directory}");
         //Log::info("Files: " . implode(', ', $files));

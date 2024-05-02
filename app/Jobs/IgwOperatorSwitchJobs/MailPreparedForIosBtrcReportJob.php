@@ -5,6 +5,7 @@ namespace App\Jobs\IgwOperatorSwitchJobs;
 use App\Http\Controllers\IOS\BtrcController;
 use App\Mail\IgwOperatorSwitchMails\SendIosBtrcReport;
 use App\Traits\HandlesMailTemplate;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Mail;
 
 class MailPreparedForIosBtrcReportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HandlesMailTemplate;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HandlesMailTemplate, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -38,9 +39,10 @@ class MailPreparedForIosBtrcReportJob implements ShouldQueue
     {
         $template = $this->findMailTemplate('ios:ios-btrc-report');
 
-        $date = Carbon::yesterday()->format('Ymd');
+        list($fromDate, $toDate) = $this->setReportDateRange();
+
         $report = new BtrcController();
-        $data = $report->dataAttachedInMailBody($date);
+        $data = $report->dataAttachedInMailBody($toDate);
 
         // Send the email
         Mail::send(new SendIosBtrcReport($data, $template));

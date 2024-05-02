@@ -41,7 +41,7 @@ class IosDestinationWiseOGReportCommand extends Command
     {
         GenerateIosDestinationWiseOGReportJob::dispatch()->chain([
             function () {
-                MailPreparedForIosDestinationWiseOGReportJob::dispatch()->delay(now()->addMinutes());
+                MailPreparedForIosDestinationWiseOGReportJob::dispatch();
             }
         ]);
     }

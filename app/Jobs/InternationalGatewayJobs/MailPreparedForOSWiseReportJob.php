@@ -38,14 +38,6 @@ class MailPreparedForOSWiseReportJob implements ShouldQueue
      */
     public function handle()
     {
-        //Used email addresses
-//        $toAddresses = ['masum.hasan@btraccl.com'];
-//        $ccAddresses = [
-//            'billing.team@btraccl.com',
-//            'fahad.islam@btraccl.com',
-//            'arif.hossain@btraccl.com'
-//        ];
-
         $template = $this->findMailTemplate('igw:os-wise-report');
 
         // File directory

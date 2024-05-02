@@ -3,6 +3,7 @@
 namespace App\Jobs\InternationalGatewayJobs;
 
 use App\Http\Controllers\IGW\OSReportController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class OSWiseReportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -42,9 +43,9 @@ class OSWiseReportJob implements ShouldQueue
         $directory = '/platform/igw/schedule/oswise/';
 
         $report = new OSReportController();
-        $inputFromDate = Carbon::yesterday()->format('Ymd'); // Set the input from yesterday
-        $inputToDate = Carbon::yesterday()->format('Ymd'); // Set the input to yesterday
-        $report->incoming($inputFromDate, $inputToDate, $directory, true);
-        $report->outgoing($inputFromDate, $inputToDate, $directory,true);
+        list($fromDate, $toDate) = $this->setReportDateRange();
+
+        $report->incoming($fromDate, $toDate, $directory, true);
+        $report->outgoing($fromDate, $toDate, $directory,true);
     }
 }

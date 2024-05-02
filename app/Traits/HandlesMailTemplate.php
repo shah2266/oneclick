@@ -7,14 +7,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 trait HandlesMailTemplate {
-
+    use ReportDateHelper;
     /**
      * @param $template
      * @return array
      */
     protected function getToAddresses($template): array
     {
-        return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['to_email_addresses']) : ['shah.alam@btraccl.com'];
+        //return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['to_email_addresses']) : ['shah.alam@btraccl.com'];
+        return ['shah.alam@btraccl.com'];
     }
 
     /**
@@ -24,7 +25,8 @@ trait HandlesMailTemplate {
     protected function getCcAddresses($template): array
     {
         // Call the trimExplodedString function with the 'cc_email_addresses' value from the template
-        return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['cc_email_addresses']) : ['shah.alam@btraccl.com','shaha2266@gmail.com']; // This test email
+        //return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['cc_email_addresses']) : ['shah.alam@btraccl.com','shaha2266@gmail.com']; // This test email
+        return ['shah.alam@btraccl.com','shaha2266@gmail.com'];
     }
 
     /**
@@ -46,12 +48,15 @@ trait HandlesMailTemplate {
 
         $subject = $template['subject'];
         $hasSubjectDate = strtolower($template['has_subject_date']);
-
-        $subject_partials = ($template['subject'] === 'BTrac IOS Wise & IGW to BTrac IOS IN wise Call Summary of') ? $subject . ' ' . Carbon::today()->format('d-M-Y') : $subject . ' ' . Carbon::yesterday()->format('d-M-Y');
+        $exist_this_subject = "BTrac IOS Wise & IGW to BTrac IOS IN wise Call Summary of";
+        $inline_date = ($template['subject'] === $exist_this_subject)
+            ? Carbon::parse(self::getDateToUse())->addDay()->format('d-M-Y')
+            : Carbon::parse(self::getDateToUse())->format('d-M-Y');
+        $subject_partials = $subject . ' ' . $inline_date;
 
         // Subject formatted
         if ($hasSubjectDate === 'before subject') {
-            return Carbon::yesterday()->format('d-M-Y') . ' ' . $subject;
+            return Carbon::parse(self::getDateToUse())->format('d-M-Y') . ' ' . $subject;
         } elseif ($hasSubjectDate === 'after subject') {
             return $subject_partials;
         } else {

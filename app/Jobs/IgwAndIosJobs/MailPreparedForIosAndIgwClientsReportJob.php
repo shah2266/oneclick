@@ -38,13 +38,6 @@ class MailPreparedForIosAndIgwClientsReportJob implements ShouldQueue
     public function handle()
     {
 
-        //Commercial email addresses
-//        $toAddresses = ['masum.hasan@btraccl.com'];
-//        $ccAddresses = [
-//            'arif.hossain@btraccl.com',
-//            'billing.team@btraccl.com'
-//        ];
-
         $template = $this->findMailTemplate('both:ios-and-igw-clients-report');
 
         // File directory
@@ -54,8 +47,8 @@ class MailPreparedForIosAndIgwClientsReportJob implements ShouldQueue
         $files = glob($directory . DIRECTORY_SEPARATOR . '*.xlsx');
 
         //Only process yesterday files
-        $needle = Carbon::today()->format('d-M-Y');
-        $foundFiles = $this->findFilesByNeedle($files, 'd-M-Y', $needle);
+        list($fromDate, $toDate) = $this->setReportCurrentDateRange();
+        $foundFiles = $this->findFilesByNeedle($files, 'd-M-Y', $toDate);
 
         //Log::info("Directory: {$this->directory}");
         //Log::info("Files: " . implode(', ', $files));

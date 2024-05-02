@@ -38,15 +38,15 @@ class MailPreparedForIosDestinationWiseOGReportJob implements ShouldQueue
     public function handle()
     {
         $template = $this->findMailTemplate('ios:destination-wise-outgoing-report');
-
-        $firstDateOfMonth = Carbon::now()->firstOfMonth()->format('Ymd');
-        $currentDate = Carbon::now()->subDays()->format('Ymd');
+        list($fromDate, $toDate) = $this->setReportDateRange();
+        $fromDate = Carbon::parse($fromDate)->format('d-M-Y'); // Set the input from yesterday
+        $toDate = Carbon::parse($toDate)->format('d-M-Y'); // Set the input to yesterday
 
         // File directory
         $directory = public_path() . DIRECTORY_SEPARATOR . 'platform\ios\schedule\destinationwisereport'; // Adjust the path as needed
 
         // Ensure the correct directory separator is used
-        $files = glob($directory . DIRECTORY_SEPARATOR . 'ios_des_report_'.$firstDateOfMonth.'_'.$currentDate.'.xlsx');
+        $files = glob($directory . DIRECTORY_SEPARATOR . 'ios_des_report '.$fromDate.' to '.$toDate.'.xlsx');
 
         //Only process yesterday files
         //$foundFiles = $this->findFilesByNeedle($files);

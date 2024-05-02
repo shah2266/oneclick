@@ -42,9 +42,9 @@ class MailPreparedForComparisonReportJob implements ShouldQueue
         $template = $this->findMailTemplate('both:comparison-report');
 
         $files = glob(public_path() . DIRECTORY_SEPARATOR . 'platform\igwandios\schedule\comparison' . DIRECTORY_SEPARATOR . '*.xlsx');
-        $date = Carbon::yesterday()->format('Ymd');
+        list($fromDate, $toDate) = $this->setReportDateRange();
         $report = new ComparisonReportController();
-        $data = $report->dataAttachedInMailBody($date, $date);
+        $data = $report->dataAttachedInMailBody($fromDate, $toDate);
 
         //Only process yesterday files
         $foundFiles = $this->findFilesByNeedle($files);

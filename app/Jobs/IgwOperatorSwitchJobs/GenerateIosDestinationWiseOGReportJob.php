@@ -3,6 +3,7 @@
 namespace App\Jobs\IgwOperatorSwitchJobs;
 
 use App\Http\Controllers\IOS\IosDestinationWiseOutgoingReportController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,7 +16,9 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class GenerateIosDestinationWiseOGReportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
+
+    protected $timeout = 600;
 
     /**
      * Create a new job instance.
@@ -36,11 +39,12 @@ class GenerateIosDestinationWiseOGReportJob implements ShouldQueue
      */
     public function handle()
     {
-        $firstDateOfMonth = Carbon::now()->firstOfMonth()->format('Ymd');
-        $currentDate = Carbon::now()->subDays()->format('Ymd');
+        set_time_limit($this->timeout);
+
+        list($fromDate, $toDate) = $this->setReportDateRange();
 
         $report = new IosDestinationWiseOutgoingReportController();
-        $report->generateExcel($firstDateOfMonth, $currentDate, true);
+        $report->generateExcel($fromDate, $toDate, true);
         Log::channel('noclick')->info('Generated destination wise report from ios platform report at:' . now());
     }
 }

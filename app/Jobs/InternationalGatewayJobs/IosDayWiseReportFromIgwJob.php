@@ -3,6 +3,7 @@
 namespace App\Jobs\InternationalGatewayJobs;
 
 use App\Http\Controllers\IGW\IOSReportController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class IosDayWiseReportFromIgwJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -42,9 +43,8 @@ class IosDayWiseReportFromIgwJob implements ShouldQueue
         $directory = '/platform/igw/schedule/ioswise/';
 
         $iosClientsReport = new IOSReportController();
-        $inputFromDate = Carbon::yesterday()->format('Ymd'); // Set the input from yesterday
-        $inputToDate = Carbon::yesterday()->format('Ymd'); // Set the input to yesterday
-        $iosClientsReport->incoming($inputFromDate, $inputToDate, $directory, true);
-        $iosClientsReport->outgoing($inputFromDate, $inputToDate, $directory,true);
+        list($fromDate, $toDate) = $this->setReportDateRange();
+        $iosClientsReport->incoming($fromDate, $toDate, $directory, true);
+        $iosClientsReport->outgoing($fromDate, $toDate, $directory,true);
     }
 }

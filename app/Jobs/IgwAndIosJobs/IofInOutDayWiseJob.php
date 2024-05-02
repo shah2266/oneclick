@@ -3,6 +3,7 @@
 namespace App\Jobs\IgwAndIosJobs;
 
 use App\Http\Controllers\IGWANDIOS\IofInOutBoundReportController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class IofInOutDayWiseJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -36,9 +37,9 @@ class IofInOutDayWiseJob implements ShouldQueue
      */
     public function handle()
     {
-        $date = Carbon::yesterday()->format('Ymd');
+        list($fromDate, $toDate) = $this->setReportDateRange();
         $report = new IofInOutBoundReportController();
-        $report->reports($date, true);
+        $report->reports($toDate, true);
 
         Log::channel('noclick')->info('Generated IOF In-Out day wise report at:' . now());
     }

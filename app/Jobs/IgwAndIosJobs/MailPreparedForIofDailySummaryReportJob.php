@@ -39,22 +39,6 @@ class MailPreparedForIofDailySummaryReportJob implements ShouldQueue
     public function handle()
     {
 
-        //Commercial email addresses
-//        $toAddresses = ['report@iofbd.com'];
-//        $ccAddresses = [
-//            'noc@iofbd.com',
-//            'iofnoc2015@gmail.com',
-//            'zainal.abedin@btraccl.com',
-//            'rokib.mahmud@btraccl.com',
-//            'jahangir.alam@btraccl.com',
-//            'tanzila.mahzabin@bd.gt.com',
-//            'noc@btraccl.com',
-//            'billing@iofbd.com',
-//            'dipendu.saha@iofbd.com',
-//            'billing.team@btraccl.com'
-//        ];
-
-
         $template = $this->findMailTemplate('both:iof-daily-summary-report');
 
         // File directory

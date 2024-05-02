@@ -1,4 +1,4 @@
-@php use Carbon\Carbon; @endphp
+@php use Carbon\Carbon; use App\Traits\ReportDateHelper; @endphp
 <!-- HTML title -->
 @section('title')
     @isset($template['subject'])
@@ -29,6 +29,6 @@
 <!-- If date used -->
 @section('date')
     @if(strtolower($template['has_inline_date']) === 'yes')
-        {{ ' ' . Carbon::yesterday()->format('d-M-Y') . '.' }}
+        {{ ' ' . Carbon::parse(ReportDateHelper::getDateToUse())->format('d-M-Y') . '.' }}
     @endif
 @endsection

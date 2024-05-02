@@ -3,6 +3,7 @@
 namespace App\Jobs\InternationalGatewayJobs;
 
 use App\Http\Controllers\IGW\CallSummaryController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class IgwCallSummaryReportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -40,8 +41,7 @@ class IgwCallSummaryReportJob implements ShouldQueue
         //$toDate = $fromDate = '20231101';
         //File save temp directory
         $directory = '/platform/igw/schedule/callsummary/';
-        $fromDate = Carbon::yesterday()->format('Ymd'); // Set the input from yesterday
-        $toDate = Carbon::yesterday()->format('Ymd'); // Set the input to yesterday
+        list($fromDate, $toDate) = $this->setReportDateRange();
         $report = new CallSummaryController();
         $report->Incoming($fromDate, $toDate, $directory, true);
         $report->Outgoing($fromDate, $toDate, null, $directory, true);

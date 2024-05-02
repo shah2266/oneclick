@@ -6,6 +6,7 @@ use App\Jobs\CleanUpDirectory;
 use App\Mail\DefaultSendMailTemplate;
 use App\Mail\SendMailTemplate;
 use App\Traits\HandlesMailTemplate;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Mail;
 
 class MailPreparedForIgwOutgoingReportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HandlesMailTemplate;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, HandlesMailTemplate, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -50,8 +51,10 @@ class MailPreparedForIgwOutgoingReportJob implements ShouldQueue
         // File directory
         $directory = public_path(). DIRECTORY_SEPARATOR .'platform\igw\schedule\callsummary'; // Adjust the path as needed
 
+        list($fromDate, $toDate) = $this->setReportDateRange();
+
         // Ensure the correct directory separator is used
-        $files = glob($directory . DIRECTORY_SEPARATOR . Carbon::yesterday()->format('d-M-Y').' Outgoing Call Status.xlsx');
+        $files = glob($directory . DIRECTORY_SEPARATOR . Carbon::parse($toDate)->format('d-M-Y').' Outgoing Call Status.xlsx');
 
         // Get all directory files
         $AllFiles = glob($directory . DIRECTORY_SEPARATOR . '*.xlsx');

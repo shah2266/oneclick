@@ -4,6 +4,7 @@ namespace App\Jobs\IgwAndIosJobs;
 
 use App\Http\Controllers\IGW\IOSReportController;
 use App\Http\Controllers\IOS\IOSDailyReportController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -16,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class IosAndIgwClientsReportFromIgwAndIosJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -43,12 +44,12 @@ class IosAndIgwClientsReportFromIgwAndIosJob implements ShouldQueue
         $directory = '/platform/igwandios/schedule/ios_and_igw_wise/';
 
         $iosClientsReport = new IOSReportController();
-        $inputFromDate = Carbon::today()->format('Ymd'); // Set the input from yesterday
-        $inputToDate = Carbon::today()->format('Ymd'); // Set the input to yesterday
-        $iosClientsReport->incoming($inputFromDate, $inputToDate, $directory, true);
-        //$iosClientsReport->outgoing($inputFromDate, $inputToDate, $directory,true);
+
+        list($fromDate, $toDate) = $this->setReportCurrentDateRange();
+        $iosClientsReport->incoming($fromDate, $toDate, $directory, true);
+        //$iosClientsReport->outgoing($fromDate, $toDate, $directory,true);
 
         $iosDailyReport = new IOSDailyReportController();
-        $iosDailyReport->reportGenerate($inputFromDate, $directory, true);
+        $iosDailyReport->reportGenerate($toDate, $directory, true);
     }
 }

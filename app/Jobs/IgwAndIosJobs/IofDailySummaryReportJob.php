@@ -3,6 +3,7 @@
 namespace App\Jobs\IgwAndIosJobs;
 
 use App\Http\Controllers\IGWANDIOS\IofDailySummaryReportController;
+use App\Traits\ReportDateHelper;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 
 class IofDailySummaryReportJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ReportDateHelper;
 
     /**
      * Create a new job instance.
@@ -36,9 +37,9 @@ class IofDailySummaryReportJob implements ShouldQueue
      */
     public function handle()
     {
-        $date = Carbon::yesterday()->format('Ymd');
+        list($fromDate, $toDate) = $this->setReportDateRange();
         $report = new IofDailySummaryReportController();
-        $report->generateReport($date, true);
+        $report->generateReport($toDate, true);
         Log::channel('noclick')->info('Generated ios daily report at:' . now());
     }
 }

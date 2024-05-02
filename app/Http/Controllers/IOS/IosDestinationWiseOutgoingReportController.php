@@ -4,6 +4,7 @@ namespace App\Http\Controllers\IOS;
 
 use App\Http\Controllers\Controller;
 use App\Traits\ExcelHelper;
+use App\Traits\ReportDateHelper;
 use Illuminate\Http\Request;
 use App\Models\IofCompany;
 use App\Traits\ExcelDataFormatting;
@@ -17,14 +18,14 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class IosDestinationWiseOutgoingReportController extends Controller
 {
-    use SQLQueryServices, ExcelDataFormatting, ExcelHelper, ScheduleProcessing;
+    use SQLQueryServices, ExcelDataFormatting, ExcelHelper, ScheduleProcessing, ReportDateHelper;
 
     const CELL_NAME = 'A';
     const A_ASCII_VALUE = 65;
     const TABLE_HEADER_CELL = 7;
     const REPORT_FIRST_CELL = 8;
     private $last_report_column;
-    const CHUNK_SIZE = 10000;
+    const CHUNK_SIZE = 20000;
 
     /**
      * @var Spreadsheet
@@ -108,7 +109,13 @@ class IosDestinationWiseOutgoingReportController extends Controller
         //$currentDate = '10 Apr 2024';
 
          //dd($firstDateOfMonth . ' - ' . $currentDate);
-         $this->generateExcel($firstDateOfMonth, $currentDate);
+         //$this->generateExcel($firstDateOfMonth, $currentDate);
+        echo (env('APP_ENV') !== 'local') ? 'Production' : 'local';
+        $input = Carbon::yesterday(); //input date format: 24-Apr-2024; 24 Apr 2024;
+        $date = Carbon::parse($input)->format('Ymd');
+        $date1 = Carbon::parse($input)->format('d-M-Y');
+
+        dump($date . ' ' . $date1);
 
         dd('test');
     }
@@ -131,11 +138,14 @@ class IosDestinationWiseOutgoingReportController extends Controller
 
         $writer = new Xlsx($this->excel);
 
+        $fromDate = Carbon::parse($fromDate)->format('d-M-Y');
+        $toDate = Carbon::parse($toDate)->format('d-M-Y');
+
         if($scheduleGenerateType) {
-            $writer->save(public_path().'/platform/ios/schedule/destinationwisereport/ios_des_report_'.$fromDate.'_'.$toDate.'.xlsx');
+            $writer->save(public_path().'/platform/ios/schedule/destinationwisereport/ios_des_report '.$fromDate.' to '.$toDate.'.xlsx');
 
         } else {
-            $writer->save(public_path().'/platform/ios/destinationwisereport/ios_des_report_'.$fromDate.'_'.$toDate.'.xlsx');
+            $writer->save(public_path().'/platform/ios/destinationwisereport/ios_des_report_'.$fromDate.' to '.$toDate.'.xlsx');
         }
 
         return true;
