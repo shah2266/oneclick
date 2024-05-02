@@ -111,12 +111,7 @@ class IosDestinationWiseOutgoingReportController extends Controller
          //dd($firstDateOfMonth . ' - ' . $currentDate);
          //$this->generateExcel($firstDateOfMonth, $currentDate);
         echo (env('APP_ENV') !== 'local') ? 'Production' : 'local';
-        $input = Carbon::yesterday(); //input date format: 24-Apr-2024; 24 Apr 2024;
-        $date = Carbon::parse($input)->format('Ymd');
-        $date1 = Carbon::parse($input)->format('d-M-Y');
-
-        dump($date . ' ' . $date1);
-
+        //dump(Carbon::now()->firstOfMonth()->next(CarbonInterface::FRIDAY)->format('d-M-Y'));
         dd('test');
     }
 

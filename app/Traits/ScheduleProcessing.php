@@ -3,13 +3,12 @@
 namespace App\Traits;
 
 use Carbon\Carbon;
-use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 use App\Models\NoclickSchedule;
 
 trait ScheduleProcessing
 {
-    use CdrFileStatus;
+    use CdrFileStatus, ReportDateHelper;
 
     /**
      * Process schedules based on current day and holiday status.
@@ -139,7 +138,7 @@ trait ScheduleProcessing
                 $todayDate = Carbon::now()->format('d-M-Y');
 
                 // Get the date of the first occurrence of the specified day of the current month
-                $firstDay = Carbon::now()->firstOfMonth()->next(Carbon::parse(ucfirst($day))->englishDayOfWeek)->addWeeks(2)->format('d-M-Y');
+                $firstDay = Carbon::now()->firstOfMonth()->next(Carbon::parse(ucfirst($day))->englishDayOfWeek)->format('d-M-Y');
 
                 if($todayDate === $firstDay) {
                     $this->scheduleCommand($command, $schedule);
@@ -155,16 +154,7 @@ trait ScheduleProcessing
      */
     protected function checkMonthlyScheduleDay(): bool
     {
-        // Get today's date
-        //$todayDate = '04-Feb-2024';
-        $todayDate = Carbon::now()->format('d-M-Y');
-
-        // Get the date of the first Monday of the current month
-        $firstMonday = Carbon::now()->firstOfMonth()->next(CarbonInterface::TUESDAY)->addWeeks(2)->format('d-M-Y');
-
-        // Compare today's date with the date of the first Monday of the current month
-        // dump($todayDate . ' vs ' . $firstMonday);
-        return $todayDate === $firstMonday;
+        return $this->setMonthlyReportDay();
     }
 
     /**

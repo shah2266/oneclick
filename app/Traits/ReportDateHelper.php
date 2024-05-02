@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 trait ReportDateHelper
 {
@@ -42,5 +43,14 @@ trait ReportDateHelper
         $fromDate = $toDate = Carbon::parse(self::getDateToUse())->addDay();
 
         return [$fromDate, $toDate];
+    }
+
+    /**
+     * @return bool
+     */
+    public function setMonthlyReportDay(): bool
+    {
+        // Compare today's date with the date of the first English day name of the current month
+        return Carbon::now()->format('d-M-Y') === Carbon::now()->firstOfMonth()->next(CarbonInterface::MONDAY)->format('d-M-Y');
     }
 }
