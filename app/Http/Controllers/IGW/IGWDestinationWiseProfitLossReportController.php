@@ -157,21 +157,16 @@ class IGWDestinationWiseProfitLossReportController extends Controller
     public function dayWiseProfitLoss(): array
     {
 
-        $dateArray = [$this->getDatesForCurrentMonth(), $this->getDatesForSubMonth()];
+        list($fromDate, $toDate) = $this->getDatesForCurrentMonth();
+        list($subFromDate, $subToDate) = $this->getDatesForSubMonth();
 
-        //dump($dateArray);
+        $result = $this->fetchAndCompareDayWiseProfitLoss('CallSummary', 'TrafficDate', $fromDate, $toDate, $subFromDate, $subToDate);
+
         $table = "<table border='1' style='border-collapse: collapse; text-align: center'>";
         $table .= "<tr>";
-        foreach ($dateArray as $key => $date) {
-            list($fromDate, $toDate) = $date;
-            $result = $this->fetchDayWiseProfitLoss('CallSummary', 'TrafficDate', $fromDate, $toDate);
-            $table .= "<td>" . $this->dataRender($result, $this->dateFormat($toDate, 'F-Y')) . "</td>";
-        }
-        $table .= "</tr></table>";
-
-        echo $table;
-//        dd('end');
-
+        $table .= "<td>" . $this->dataRender($result, $this->dateFormat($toDate, 'F-Y'), $this->dateFormat($subToDate, 'F-Y')) . "</td>";
+        $table .= "</tr>";
+        $table .= "</table>";
 
         return [
             'dayWise' => $table
@@ -182,36 +177,75 @@ class IGWDestinationWiseProfitLossReportController extends Controller
 
     /**
      * @param $result
-     * @param $month
+     * @param $current_month
+     * @param $previous_month
      * @return string
      */
-    protected function dataRender($result, $month): string
+    protected function dataRender($result, $current_month, $previous_month): string
     {
-        $tbl_heading = ['Traffic date', 'Successful call', 'Duration', 'Bill duration', 'Actual amount (BDT)'];
-        $schema = ['traffic_date', 'successful_call', 'duration', 'bill_duration', 'actual_amount_bdt'];
+        $tbl_heading = [
+            'Date', 'Calls', 'Dur', 'Bill.Dur', 'Actual amount (BDT)',
+            'Diff amount', 'Date', 'Calls', 'Dur', 'Bill.Dur', 'Actual amount (BDT)'
+        ];
+        $schema = [
+            'cm_traffic_date', 'cm_successful_call', 'cm_duration', 'cm_bill_duration', 'cm_actual_amount_bdt',
+            'diff_amt', 'pm_traffic_date', 'pm_successful_call', 'pm_duration', 'pm_bill_duration', 'pm_actual_amount_bdt'
+        ];
 
-        $table = "<table border='1' style='border-collapse: collapse; font-size: 13px; padding: 5px; text-align: center'>";
+        // Initialize sum variables
+        $sums = array_fill(0, count($schema), 0);
 
-        $table .= "<tr style='height: 30px; font-size: 15px;'><th colspan='5'>Day wise outgoing profit-loss summary of " . $month . "</th></tr>";
+        $table = "<table border='1' style='border-collapse: collapse; font-size: 12px; padding: 5px; text-align: center'>";
+
+        $table .= "<tr style='height: 30px; font-size: 12px;'>";
+        $table .= "<th colspan='5'>OG Profit-loss summary of " . $current_month . "</th>";
+        $table .= "<th style='padding: 5px;'>Diff. Amount <br>" . $current_month . ' - ' . $previous_month . "</th>";
+        $table .= "<th colspan='5'>OG Profit-loss summary of " . $previous_month . "</th>";
+        $table .= "</tr>";
 
         $table .= "<tr>";
-        for($i = 0; $i < count($tbl_heading); $i++) {
-            $table .= "<th style='padding: 5px 8px;'>" . $tbl_heading[$i] . "</th>";
+        foreach ($tbl_heading as $heading) {
+            $table .= "<th style='padding: 5px; font-size: 12px;'>" . $heading . "</th>";
         }
         $table .= "</tr>";
 
-        foreach($result['data'] as $data) {
+        // Process each row of data
+        foreach ($result['data'] as $data) {
             $table .= "<tr>";
-            for($i = 0; $i < count($schema); $i++) {
-                $schema_name = $schema[$i];
-                $table .= ($i == 0) ? "<td style='padding: 5px 8px;'>" . $data->$schema_name . "</td>"
-                    : "<td style='padding: 5px 8px; text-align: right;'>" . number_format($data->$schema_name, 2,) . "</td>";
+            foreach ($schema as $i => $schema_name) {
+                $value = $data->$schema_name;
+                $style = ($i == 5) ? "style='padding: 5px; background-color: yellow;'" : "style='padding: 5px; text-align: right;'";
+                if (is_numeric($value)) {
+                    $sums[$i] += $value;
+                    $formattedValue = number_format($value, 2);
+                    if ($i == 5 && $value < 0) {
+                        $formattedValue = "<span style='color: red;'>" . $formattedValue . "</span>";
+                    }
+                    $table .= "<td $style>" . $formattedValue . "</td>";
+                } else {
+                    $table .= "<td $style>" . $value . "</td>";
+                }
             }
             $table .= "</tr>";
         }
+
+        // Add total row
+        $table .= "<tr style='font-weight: bold; font-size: 12px'>";
+        foreach ($sums as $i => $sum) {
+            $formattedSum = number_format($sum, 2);
+            $style = ($i == 5) ? "style='padding: 5px; background-color: yellow; text-align: center;'" : "style='padding: 5px; text-align: right;'";
+            if ($i == 5 && $sum < 0) {
+                $formattedSum = "<span style='color: red;'>" . $formattedSum . "</span>";
+            }
+            $table .= ($i == 0 || $i == 6) ? "<td style='padding: 5px; text-align: left;'>Total</td>"
+                : "<td $style>" . $formattedSum . "</td>";
+        }
+        $table .= "</tr>";
+
         $table .= "</table>";
 
         return $table;
     }
+
 
 }

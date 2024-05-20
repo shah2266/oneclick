@@ -39,11 +39,10 @@ class IGWDayWiseProfitLossReportCommand extends Command
      */
     public function handle()
     {
-//        GenerateIGWDayWiseProfitLossReportJob::dispatch()->chain([
-//            function () {
-//                MailPreparedForIGWDayWiseProfitLossReportJob::dispatch();
-//            }
-//        ]);
-        MailPreparedForIGWDayWiseProfitLossReportJob::dispatch();
+        GenerateIGWDayWiseProfitLossReportJob::dispatch()->chain([
+            function () {
+                MailPreparedForIGWDayWiseProfitLossReportJob::dispatch();
+            }
+        ]);
     }
 }

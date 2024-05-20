@@ -247,6 +247,83 @@ trait SQLQueryServices
         return ['data' => $data, 'total_count' => $totalCount];
     }
 
+
+    /**
+     * @param $table
+     * @param $dateColumn
+     * @param $fromDate
+     * @param $toDate
+     * @param $subFromDate
+     * @param $subToDate
+     * @return array
+     */
+    protected function fetchAndCompareDayWiseProfitLoss($table, $dateColumn, $fromDate, $toDate, $subFromDate, $subToDate): array
+    {
+        $query =
+            /** @lang text */
+            "
+                SELECT
+                    cm.tDate AS 'cm_traffic_date', cm.sCall AS 'cm_successful_call' , cm.dur AS 'cm_duration', cm.bDur AS 'cm_bill_duration', cm.amt_bdt AS 'cm_actual_amount_bdt',
+                    (cm.amt_bdt - pm.amt_bdt) AS 'diff_amt',
+                    pm.tDate AS 'pm_traffic_date', pm.sCall AS 'pm_successful_call', pm.dur AS 'pm_duration', pm.bDur AS 'pm_bill_duration', pm.amt_bdt AS 'pm_actual_amount_bdt'
+                    FROM (
+                        SELECT
+                            ROW_NUMBER() OVER (ORDER BY CONVERT(VARCHAR(30), cm.$dateColumn, 112)) AS serial_number,
+                            CONVERT(VARCHAR(30), cm.$dateColumn, 112) AS 'order_date',
+                            REPLACE(CONVERT(VARCHAR(30), cm.$dateColumn, 6), ' ', '-') AS 'tDate',
+                            " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'sCall',
+                            SUM(cm.CallDuration/60) AS 'dur' ,
+                            SUM(cm.BillDuration/60) AS 'bDur',
+                            ((((SUM(cm.BillDuration/60*cm.InFixedRate) - (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15) + (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) - (((SUM(cm.BillDuration/60*cm.InFixedRate) - (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15 * 0.40) + (SUM(cm.CallDuration/60*cm.OutRate) * ex.Rate)))  AS 'amt_bdt'
+                        FROM
+                            $table cm
+                        JOIN
+                            ExchangeRate ex ON cm.$dateColumn BETWEEN ex.FromActiveDate AND ex.ToActiveDate
+                        WHERE
+                            cm.$dateColumn BETWEEN '$fromDate 00:00:00' AND '$toDate 23:59:59'
+                            AND cm.ReportTrafficDirection = 2
+                        GROUP BY
+                            CONVERT(VARCHAR(30), cm.$dateColumn, 112),
+                            REPLACE(CONVERT(VARCHAR(30), cm.$dateColumn, 6), ' ', '-'),
+                            ex.Rate
+                    ) AS cm,
+                    (
+                        SELECT
+                            ROW_NUMBER() OVER (ORDER BY CONVERT(VARCHAR(30), cm.$dateColumn, 112)) AS serial_number,
+                            CONVERT(VARCHAR(30), cm.$dateColumn, 112) AS 'order_date',
+                            REPLACE(CONVERT(VARCHAR(30), cm.$dateColumn, 6), ' ', '-') AS 'tDate',
+                            " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'sCall',
+                            SUM(cm.CallDuration/60) AS 'dur' ,
+                            SUM(cm.BillDuration/60) AS 'bDur',
+                            ((((SUM(cm.BillDuration/60*cm.InFixedRate) - (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15) + (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) - (((SUM(cm.BillDuration/60*cm.InFixedRate) - (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15 * 0.40) + (SUM(cm.CallDuration/60*cm.OutRate) * ex.Rate)))  AS 'amt_bdt'
+                        FROM
+                            $table cm
+                        JOIN
+                            ExchangeRate ex ON cm.$dateColumn BETWEEN ex.FromActiveDate AND ex.ToActiveDate
+                        WHERE
+                            cm.$dateColumn BETWEEN '$subFromDate 00:00:00' AND '$subToDate 23:59:59'
+                            AND cm.ReportTrafficDirection = 2
+                        GROUP BY
+                            CONVERT(VARCHAR(30), cm.$dateColumn, 112),
+                            REPLACE(CONVERT(VARCHAR(30), cm.$dateColumn, 6), ' ', '-'),
+                            ex.Rate
+                    ) AS pm
+                where cm.serial_number=pm.serial_number
+                GROUP BY
+                    cm.order_date, cm.tDate, cm.sCall, cm.dur, cm.bDur, cm.amt_bdt,
+                    pm.order_date, pm.tDate, pm.sCall, pm.dur, pm.bDur, pm.amt_bdt
+                ORDER BY
+                    cm.order_date, pm.order_date
+            ";
+
+        $data = $this->QueryExecuted('sqlsrv1', $query);
+
+        // Get the total count
+        $totalCount = count($data);
+
+        return ['data' => $data, 'total_count' => $totalCount];
+    }
+
     /**
      * @param $table
      * @param $dateColumn

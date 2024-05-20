@@ -47,6 +47,8 @@ class MailPreparedForIGWDayWiseProfitLossReportJob implements ShouldQueue
         // File directory
         $directory = public_path() . DIRECTORY_SEPARATOR . 'platform\igw\schedule\profit_loss\daily'; // Adjust the path as needed
 
+        $template['subject'] = $template['subject'] . ' || ' . $this->dateFormat($toDate, 'F-Y');
+
         // Ensure the correct directory separator is used
         $files = glob($directory . DIRECTORY_SEPARATOR . 'profit_loss_'.$fromDate.' to '.$toDate.'.xlsx');
 
@@ -63,7 +65,7 @@ class MailPreparedForIGWDayWiseProfitLossReportJob implements ShouldQueue
             if(count(Mail::failures()) === 0) {
 
                 // Dispatch the CleanUpDirectory job after sending the email
-                //CleanUpDirectory::dispatch($files)->delay(now()->addMinutes());
+                // CleanUpDirectory::dispatch($files)->delay(now()->addMinutes());
             } else {
                 Log::channel('noclick')->error('Failed to send day wise profit loss report email!!!');
             }

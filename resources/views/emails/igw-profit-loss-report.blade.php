@@ -5,10 +5,7 @@
 
 <!-- Additional content -->
 @section('content')
-    <!-- Today call summary -->
-{{--    @foreach ($tableContent as $row)--}}
-{{--        {!! $row !!}--}}
-{{--    @endforeach--}}
+    <!-- Day wise profit loss -->
     @foreach($dayWise as $data)
         {!! $data !!}
     @endforeach
