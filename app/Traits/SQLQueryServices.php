@@ -143,6 +143,149 @@ trait SQLQueryServices
         return ['data' => $data, 'total_count' => $totalCount];
     }
 
+    protected function fetchDestinationWiseProfitLossFromIgw($table, $dateColumn, $fromDate, $toDate): array
+    {
+        //$query = /** @lang text */ "SELECT * FROM $table WHERE traffic_date BETWEEN '$fromDate' AND '$toDate' ORDER BY $dateColumn";
+        $query =
+            /** @lang text */
+            "
+            SELECT
+                CONVERT(VARCHAR(30), cm.$dateColumn, 112) AS 'order_date',
+                CONVERT(VARCHAR(30), cm.$dateColumn, 106) AS 'traffic_date',
+                cy.ShortName AS 'os_name',
+                ct.CountryName AS 'country',
+                z.ZoneName AS 'destination',
+                cm.InRatedPrefix AS 'btrc_zone_code',
+                cm.OutRatedPrefix AS 'os_zone_code',
+                " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'successful_call',
+                SUM(cm.CallDuration/60) AS 'duration',
+                SUM(cm.BillDuration/60) AS 'bill_duration',
+                SUM(cm.CallDuration/60 * cm.InRate) / SUM(cm.CallDuration/60) AS 'in_rate',
+                SUM(cm.CallDuration/60 * cm.OutRate) / SUM(cm.CallDuration/60) AS 'out_rate',
+                SUM(cm.CallDuration/60 * cm.InRate) AS 'btrc_y_amount_in_dollar',
+                SUM(cm.CallDuration/60 * cm.OutRate) AS 'os_y_amount_in_dollar',
+                SUM(cm.BillDuration/60 * cm.InRate) AS 'btrc_y_bill_amount_in_dollar',
+                SUM(cm.BillDuration/60 * cm.InFixedRate) AS 'btrc_x_amount_in_bdt',
+                ex.Rate AS 'exchange_rate',
+                (SUM(cm.CallDuration/60 * cm.InRate) - SUM(cm.CallDuration/60 * cm.OutRate)) AS 'btrc_os_y_amount_in_dollar',
+                SUM(cm.BillDuration/60 * cm.InRate) * ex.Rate AS 'btrc_y_bill_amount_in_bdt',
+                SUM(cm.BillDuration/60 * cm.InFixedRate) - SUM(cm.BillDuration/60 * cm.InRate) * ex.Rate AS 'z_amount_in_bdt',
+                (SUM(cm.BillDuration/60 * cm.InFixedRate) - SUM(cm.BillDuration/60 * cm.InRate) * ex.Rate) * 0.15 + SUM(cm.BillDuration/60 * cm.InRate) * ex.Rate AS 'invoice_amount_in_bdt',
+                (SUM(cm.BillDuration/60 * cm.InFixedRate) - SUM(cm.BillDuration/60 * cm.InRate) * ex.Rate) * 0.15 * 0.40 AS 'btrc_part',
+                SUM(cm.CallDuration/60 * cm.OutRate) * ex.Rate AS 'os_y_amount_in_bdt',
+                ((((Sum(cm.BillDuration/60*cm.InFixedRate) - (Sum(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15) + (Sum(cm.BillDuration/60*cm.InRate) * ex.Rate)) - (((Sum(cm.BillDuration/60*cm.InFixedRate) - (Sum(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15 * 0.40) + (Sum(cm.CallDuration/60*cm.OutRate) * ex.Rate)))  AS 'actual_amount_in_bdt'
+            FROM
+                $table cm
+                JOIN ExchangeRate ex ON cm.$dateColumn BETWEEN ex.FromActiveDate AND ex.ToActiveDate
+                JOIN Zone z ON z.ZoneCode = cm.InRatedPrefix
+                JOIN Company cy ON cy.CompanyID = cm.OutCompanyID
+                JOIN Country ct ON z.CountryID = ct.CountryID
+            WHERE
+                cm.$dateColumn BETWEEN '$fromDate 00:00:00' AND '$toDate 23:59:59'
+                AND cm.ReportTrafficDirection = 2
+            GROUP BY
+                CONVERT(VARCHAR(30), cm.$dateColumn, 112),
+                CONVERT(VARCHAR(30), cm.$dateColumn, 106),
+                cy.ShortName,
+                ct.CountryName,
+                z.ZoneName,
+                cm.InRatedPrefix,
+                cm.OutRatedPrefix,
+                ex.Rate,
+                cm.InFixedRate
+            ORDER BY
+                CONVERT(VARCHAR(30), cm.$dateColumn, 112), cy.ShortName;
+        ";
+
+        $data = $this->QueryExecuted('sqlsrv1', $query);
+
+        // Get the total count
+        $totalCount = count($data);
+
+        return ['data' => $data, 'total_count' => $totalCount];
+    }
+
+    /**
+     * @param $table
+     * @param $dateColumn
+     * @param $fromDate
+     * @param $toDate
+     * @return array
+     */
+    protected function fetchDayWiseProfitLoss($table, $dateColumn, $fromDate, $toDate): array
+    {
+        $query =
+            /** @lang text */
+            "
+            SELECT
+                CONVERT(VARCHAR(30),cm.$dateColumn,112) AS 'order_date',
+                REPLACE(CONVERT(VARCHAR(30),cm.$dateColumn,106),' ','-') AS 'traffic_date',
+                " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'successful_call',
+                SUM(cm.CallDuration/60) AS 'duration' ,
+                SUM(cm.BillDuration/60) AS 'bill_duration',
+                ex.Rate AS 'exchange_rate',
+                ((((SUM(cm.BillDuration/60*cm.InFixedRate) - (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15) + (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) - (((SUM(cm.BillDuration/60*cm.InFixedRate) - (SUM(cm.BillDuration/60*cm.InRate) * ex.Rate)) * 0.15 * 0.40) + (SUM(cm.CallDuration/60*cm.OutRate) * ex.Rate)))  AS 'actual_amount_bdt'
+            from
+                $table cm,
+                ExchangeRate ex
+            Where
+                cm.$dateColumn between '$fromDate 00:00:00' AND '$toDate 23:59:59'
+                AND cm.ReportTrafficDirection=2
+                AND cm.$dateColumn BETWEEN ex.FromActiveDate AND ex.ToActiveDate
+            Group by
+                convert(VARCHAR(30),cm.$dateColumn,112),
+                convert(VARCHAR(30),cm.$dateColumn,106) ,ex.Rate
+            Order BY
+                convert(VARCHAR(30),cm.$dateColumn,112)
+            ";
+
+        $data = $this->QueryExecuted('sqlsrv1', $query);
+
+        // Get the total count
+        $totalCount = count($data);
+
+        return ['data' => $data, 'total_count' => $totalCount];
+    }
+
+    /**
+     * @param $table
+     * @param $dateColumn
+     * @param $fromDate
+     * @param $toDate
+     * @return array
+     */
+    protected function fetchIosWiseIncomingFromIgw($table, $dateColumn, $fromDate, $toDate): array
+    {
+        $query = /** @lang text */
+            "
+            SELECT
+                CONVERT(varchar(7), cm.$dateColumn, 126) AS 'month_name',
+                cy.ShortName AS 'company_name',
+                " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'successful_call',
+                SUM(cm.CallDuration) / 60 AS 'duration',
+                SUM(cm.BillDuration) / 60 AS 'bill_duration'
+            FROM
+                $table cm, Company cy
+            WHERE
+                cm.$dateColumn BETWEEN '$fromDate 00:00:00' AND '$toDate 23:59:59'
+                AND cm.ReportTrafficDirection = 1
+                AND cm.OutCompanyID = cy.CompanyID
+            GROUP BY
+                CONVERT(varchar(7), cm.$dateColumn, 126),
+                cm.OutCompanyID,
+                cy.ShortName
+            ORDER BY
+                cy.ShortName;
+            ";
+
+        $data = $this->QueryExecuted('sqlsrv1', $query);
+
+        // Get the total count
+        $totalCount = count($data);
+
+        return ['data' => $data, 'total_count' => $totalCount];
+    }
+
     /**
      * @param string $connectionName
      * @param string $query

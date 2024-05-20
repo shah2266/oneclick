@@ -6,26 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Traits\ExcelHelper;
 use App\Traits\ReportDateHelper;
 use Illuminate\Http\Request;
-use App\Models\IofCompany;
-use App\Traits\ExcelDataFormatting;
-use App\Traits\ScheduleProcessing;
 use App\Traits\SQLQueryServices;
 use Carbon\Carbon;
-use Carbon\CarbonInterface;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class IosDestinationWiseOutgoingReportController extends Controller
 {
-    use SQLQueryServices, ExcelDataFormatting, ExcelHelper, ScheduleProcessing, ReportDateHelper;
-
-    const CELL_NAME = 'A';
-    const A_ASCII_VALUE = 65;
-    const TABLE_HEADER_CELL = 7;
-    const REPORT_FIRST_CELL = 8;
-    private $last_report_column;
-    const CHUNK_SIZE = 20000;
+    use SQLQueryServices, ExcelHelper, ReportDateHelper;
 
     /**
      * @var Spreadsheet
@@ -36,26 +24,28 @@ class IosDestinationWiseOutgoingReportController extends Controller
     public function __construct()
     {
         $this->excel = new Spreadsheet();
-        $this->last_report_column = count($this->dbSchema()) - 1;
+        $this->initialize('H', 'I', $this->dbSchema(), $this->reportHeading());
     }
 
     /**
      * @return string[]
      */
-    private function reportHeading($fromDate, $toDate, $direction): array
+    private function reportHeading($fromDate = null, $toDate = null, $direction = null): array
     {
         return [
-            'Traffic Summary',
+            'Day wise traffic summary',
+            'Report: Destination wise outgoing',
+            'Platform: IOS',
             'From Date: ' . Carbon::parse($fromDate)->format('d-M-Y'),
             'To Date: ' . Carbon::parse($toDate)->format('d-M-Y'),
-            'Direction: ' . $direction
+            ($direction == 1) ? 'Direction: Int. Incoming' : 'Direction: Int. Outgoing',
         ];
     }
 
     /**
      * @return string[]
      */
-    private function tableHeading($direction = null): array
+    private function tableHeading(): array
     {
         return [
             'Traffic date',
@@ -98,20 +88,16 @@ class IosDestinationWiseOutgoingReportController extends Controller
      */
     public function index()
     {
-
         // Set the day to 1 to get the first day of the month
-        //$firstDateOfMonth = Carbon::now()->firstOfMonth()->format('d M Y');
         $firstDateOfMonth = Carbon::now()->firstOfMonth()->format('Ymd');
+        $firstDateOfMonth = '01 May 2024';
 
         // Get the current date
-        //$currentDate = Carbon::now()->subDays()->format('d M Y');
         $currentDate = Carbon::now()->subDays()->format('Ymd');
-        //$currentDate = '10 Apr 2024';
+        $currentDate = '02 May 2024';
 
-         //dd($firstDateOfMonth . ' - ' . $currentDate);
-         //$this->generateExcel($firstDateOfMonth, $currentDate);
-        echo (env('APP_ENV') !== 'local') ? 'Production' : 'local';
-        //dump(Carbon::now()->firstOfMonth()->next(CarbonInterface::FRIDAY)->format('d-M-Y'));
+        $this->generateExcel($firstDateOfMonth, $currentDate);
+        //echo (env('APP_ENV') !== 'local') ? 'Production' : 'local';
         dd('test');
     }
 
@@ -122,87 +108,23 @@ class IosDestinationWiseOutgoingReportController extends Controller
      */
     public function generateExcel($fromDate, $toDate, $scheduleGenerateType = false): bool
     {
-        $result = $this->fetchDestinationWiseDataFromIos('CallSummary', 'TrafficDate', $fromDate, $toDate);
+        $direction = 2;  // '1 => Int. Incoming'; '2 => Int. Outgoing'
+
+        // Calculate and set totals
+        $columns = ['A', 'I', 'J', 'K'];
+
+        $queryResult = $this->fetchDestinationWiseDataFromIos('CallSummary', 'TrafficDate', $fromDate, $toDate);
         //$result = $this->fetchDestinationWiseDataFromIos('DestinationWiseOutgoingReport', 'traffic_date', $fromDate, $toDate);
 
         $this->excel->getActiveSheet()->setTitle('Destination_wise_og_report');
-        $this->setDataInSpreadsheet(0, $fromDate, $toDate, 2 , $result);
+        $this->setDataInSpreadsheet($this->excel, 0, $this->reportHeading($fromDate, $toDate, $direction), $this->tableHeading(), $this->dbSchema(), $queryResult, $columns);
 
-        //Authors
-        $this->authors($this->excel);
+        $directory1 = 'ios/schedule/destinationwisereport/ios_des_report '. $this->dateFormat($fromDate).' to '. $this->dateFormat($toDate) .'.xlsx';
+        $directory2 = 'ios/destinationwisereport/ios_des_report_'. $this->dateFormat($fromDate).' to '. $this->dateFormat($toDate) .'.xlsx';
 
-        $writer = new Xlsx($this->excel);
-
-        $fromDate = Carbon::parse($fromDate)->format('d-M-Y');
-        $toDate = Carbon::parse($toDate)->format('d-M-Y');
-
-        if($scheduleGenerateType) {
-            $writer->save(public_path().'/platform/ios/schedule/destinationwisereport/ios_des_report '.$fromDate.' to '.$toDate.'.xlsx');
-
-        } else {
-            $writer->save(public_path().'/platform/ios/destinationwisereport/ios_des_report_'.$fromDate.' to '.$toDate.'.xlsx');
-        }
+        $this->saveFile($this->excel, $scheduleGenerateType, $directory1, $directory2);
 
         return true;
     }
 
-    /**
-     * Sets report and table headings.
-     *
-     * @param $excelInstance
-     * @param $fromDate
-     * @param $toDate
-     * @param $direction
-     */
-    private function setReportAndTableHeadings($excelInstance, $fromDate, $toDate, $direction)
-    {
-        $dir = ($direction == 1) ? 'Int. Incoming' : 'Int. Outgoing';
-
-        // Set report heading
-        $this->setReportHeading($excelInstance, self::CELL_NAME, (self::A_ASCII_VALUE + $this->last_report_column), $this->reportHeading($fromDate, $toDate, $dir));
-
-        // Set table heading
-        $this->setTableHeading($excelInstance, self::A_ASCII_VALUE, (self::A_ASCII_VALUE + $this->last_report_column), self::TABLE_HEADER_CELL, $this->tableHeading());
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function setDataInSpreadsheet($activeSheet, $fromDate, $toDate, $direction, $queryResult): Spreadsheet
-    {
-        $a_ascii_value = self::A_ASCII_VALUE;
-        $report_first_cell = self::REPORT_FIRST_CELL;
-        $tbl_header_cell = self::TABLE_HEADER_CELL;
-
-        // Set the active sheet index
-        $this->activeSheet($this->excel, $activeSheet);
-
-        // Set report and table headings
-        $this->setReportAndTableHeadings($this->excel, $fromDate, $toDate, $direction);
-
-        // Split data into chunks and write to Excel
-        $startIndex = 0;
-
-        foreach (array_chunk($queryResult['data'], self::CHUNK_SIZE) as $chunk) {
-            set_time_limit(600);
-            //$this->populateData($chunk);
-            // Populate data from query result
-            $this->populateData($this->excel, $a_ascii_value, $report_first_cell + $startIndex, $this->dbSchema(), $chunk);
-            // Update the starting index for the next chunk
-            $startIndex += count($chunk);
-        }
-
-        // Calculate and set totals
-        $columns = ['A', 'I', 'J', 'K'];
-        $lastCell = $this->calculateAndSetTotals($this->excel,$tbl_header_cell, $report_first_cell, $columns , $queryResult['total_count']);
-
-        // Format the spreadsheet
-        $this->formatSpreadsheet($this->excel, $a_ascii_value, ($a_ascii_value + $this->last_report_column), $tbl_header_cell, $report_first_cell, $lastCell, 'H', 'I');
-
-        // Set default active sheet
-        $this->excel->setActiveSheetIndex(0);
-
-        // Return the spreadsheet object
-        return $this->excel;
-    }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\ICX\BanglaicxReportController;
 use App\Http\Controllers\IGW\BtrcReportController;
 use App\Http\Controllers\IGW\CallSummaryController;
 use App\Http\Controllers\IGW\IGWDayWiseDataCrossCheckController;
+use App\Http\Controllers\IGW\IGWDestinationWiseProfitLossReportController;
 use App\Http\Controllers\IGW\IOSReportController;
 use App\Http\Controllers\IGW\OSReportController;
 use App\Http\Controllers\IGWANDIOS\ComparisonReportController;
@@ -16,7 +17,6 @@ use App\Http\Controllers\IOS\BtrcController;
 use App\Http\Controllers\IOS\IosBtrcMonthlyReportController;
 use App\Http\Controllers\IOS\IOSDailyReportController;
 use App\Http\Controllers\IOS\IOSDayWiseDataCrossCheckController;
-use App\Http\Controllers\IOS\IosDestinationWiseOutgoingReportController;
 use App\Http\Controllers\Noclick\NoclickCommandController;
 use App\Http\Controllers\Noclick\NoclickMailTemplateController;
 use App\Http\Controllers\Noclick\NoclickScheduleController;
@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/develop', [IosDestinationWiseOutgoingReportController::class, 'index']);
+Route::get('/develop', [IGWDestinationWiseProfitLossReportController::class, 'index']);
 
 Auth::routes([
     'register' => false,

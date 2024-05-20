@@ -38,18 +38,6 @@ class MailPreparedForIosDayWiseReportFromIgwJob implements ShouldQueue
      */
     public function handle()
     {
-
-        // Commercial email addresses
-//        $toAddresses = ['masum.hasan@btraccl.com'];
-//        $ccAddresses = [
-//            'btraccore@btraccl.com',
-//            'fahad.islam@btraccl.com',
-//            'arif.hossain@btraccl.com',
-//            'noc@btraccl.com',
-//            'billing.team@btraccl.com'
-//        ];
-
-
         $template = $this->findMailTemplate('igw:ios-wise-report');
 
 

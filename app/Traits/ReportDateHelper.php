@@ -53,4 +53,32 @@ trait ReportDateHelper
         // Compare today's date with the date of the first English day name of the current month
         return Carbon::now()->format('d-M-Y') === Carbon::now()->firstOfMonth()->next(CarbonInterface::MONDAY)->format('d-M-Y');
     }
+
+
+    /**
+     * @return array
+     */
+    public function getDatesForCurrentMonth(): array
+    {
+        return [Carbon::now()->firstOfMonth()->format('Ymd'), Carbon::now()->subDays()->format('Ymd')] ;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDatesForSubMonth(): array
+    {
+        return [Carbon::now()->firstOfMonth()->subMonth()->format('Ymd'), Carbon::now()->subMonth()->subDays()->format('Ymd')] ;
+    }
+
+
+    /**
+     * @param $date
+     * @param string $format
+     * @return string
+     */
+    public function dateFormat($date, string $format = 'd-M-Y'): string
+    {
+        return Carbon::parse($date)->format($format);
+    }
 }
