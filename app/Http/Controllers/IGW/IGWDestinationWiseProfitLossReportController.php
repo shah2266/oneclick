@@ -156,96 +156,206 @@ class IGWDestinationWiseProfitLossReportController extends Controller
      */
     public function dayWiseProfitLoss(): array
     {
+        //$dateArray = [$this->getDatesForCurrentMonth(), $this->getDatesForSubMonth()];
 
         list($fromDate, $toDate) = $this->getDatesForCurrentMonth();
         list($subFromDate, $subToDate) = $this->getDatesForSubMonth();
 
-        $result = $this->fetchAndCompareDayWiseProfitLoss('CallSummary', 'TrafficDate', $fromDate, $toDate, $subFromDate, $subToDate);
-
         $table = "<table border='1' style='border-collapse: collapse; text-align: center'>";
         $table .= "<tr>";
-        $table .= "<td>" . $this->dataRender($result, $this->dateFormat($toDate, 'F-Y'), $this->dateFormat($subToDate, 'F-Y')) . "</td>";
+
+        // Fetch data for both current and previous month
+        $currentMonthResult = $this->fetchDayWiseProfitLoss('CallSummary', 'TrafficDate', $fromDate, $toDate);
+        $previousMonthResult = $this->fetchDayWiseProfitLoss('CallSummary', 'TrafficDate', $subFromDate, $subToDate);
+
+        // Render the table with the data
+        $table .= "<td>" . $this->dataRender($currentMonthResult, $previousMonthResult, $this->dateFormat($toDate, 'F-Y'), $this->dateFormat($subToDate, 'F-Y')) . "</td>";
         $table .= "</tr>";
         $table .= "</table>";
 
         return [
             'dayWise' => $table
         ];
-
     }
 
-
     /**
-     * @param $result
+     * @param $currentMonthResult
+     * @param $previousMonthData
      * @param $current_month
      * @param $previous_month
      * @return string
      */
-    protected function dataRender($result, $current_month, $previous_month): string
+    protected function dataRender($currentMonthResult, $previousMonthData, $current_month, $previous_month): string
     {
         $tbl_heading = [
-            'Date', 'Calls', 'Dur', 'Bill.Dur', 'Actual amount (BDT)',
-            'Diff amount', 'Date', 'Calls', 'Dur', 'Bill.Dur', 'Actual amount (BDT)'
+            'Date', 'Calls', 'Dur', 'Bill.Dur', 'Amount (BDT)',
+            'Diff amount',
+            'Date', 'Calls', 'Dur', 'Bill.Dur', 'Amount (BDT)'
         ];
-        $schema = [
-            'cm_traffic_date', 'cm_successful_call', 'cm_duration', 'cm_bill_duration', 'cm_actual_amount_bdt',
-            'diff_amt', 'pm_traffic_date', 'pm_successful_call', 'pm_duration', 'pm_bill_duration', 'pm_actual_amount_bdt'
+        $schema = ['traffic_date', 'successful_call', 'duration', 'bill_duration', 'actual_amount_bdt'];
+
+        $totals = [
+            'current' => array_fill_keys($schema, 0),
+            'previous' => array_fill_keys($schema, 0),
+            'diff' => 0
         ];
 
-        // Initialize sum variables
-        $sums = array_fill(0, count($schema), 0);
+        $daysInCurrentMonth = count($currentMonthResult['data']);
+        $daysInPreviousMonth = count($previousMonthData['data']);
+        $maxDays = max($daysInCurrentMonth, $daysInPreviousMonth);
 
         $table = "<table border='1' style='border-collapse: collapse; font-size: 12px; padding: 5px; text-align: center'>";
 
-        $table .= "<tr style='height: 30px; font-size: 12px;'>";
+        $table .= "<tr style='height: 30px; font-size: 12px; background: #effeff;'>";
         $table .= "<th colspan='5'>OG Profit-loss summary of " . $current_month . "</th>";
         $table .= "<th style='padding: 5px;'>Diff. Amount <br>" . $current_month . ' - ' . $previous_month . "</th>";
         $table .= "<th colspan='5'>OG Profit-loss summary of " . $previous_month . "</th>";
         $table .= "</tr>";
 
-        $table .= "<tr>";
-        foreach ($tbl_heading as $heading) {
-            $table .= "<th style='padding: 5px; font-size: 12px;'>" . $heading . "</th>";
-        }
-        $table .= "</tr>";
+        $table .= $this->renderTableHeader($tbl_heading);
 
-        // Process each row of data
-        foreach ($result['data'] as $data) {
-            $table .= "<tr>";
-            foreach ($schema as $i => $schema_name) {
-                $value = $data->$schema_name;
-                $style = ($i == 5) ? "style='padding: 5px; background-color: yellow;'" : "style='padding: 5px; text-align: right;'";
-                if (is_numeric($value)) {
-                    $sums[$i] += $value;
-                    $formattedValue = number_format($value, 2);
-                    if ($i == 5 && $value < 0) {
-                        $formattedValue = "<span style='color: red;'>" . $formattedValue . "</span>";
-                    }
-                    $table .= "<td $style>" . $formattedValue . "</td>";
-                } else {
-                    $table .= "<td $style>" . $value . "</td>";
-                }
-            }
-            $table .= "</tr>";
+        for ($index = 0; $index < $maxDays; $index++) {
+            $currentData = $index < $daysInCurrentMonth ? $currentMonthResult['data'][$index] : null;
+            $previousData = $index < $daysInPreviousMonth ? $previousMonthData['data'][$index] : null;
+            $table .= $this->renderTableRow($currentData, $previousData, $schema, $totals);
         }
 
-        // Add total row
-        $table .= "<tr style='font-weight: bold; font-size: 12px'>";
-        foreach ($sums as $i => $sum) {
-            $formattedSum = number_format($sum, 2);
-            $style = ($i == 5) ? "style='padding: 5px; background-color: yellow; text-align: center;'" : "style='padding: 5px; text-align: right;'";
-            if ($i == 5 && $sum < 0) {
-                $formattedSum = "<span style='color: red;'>" . $formattedSum . "</span>";
-            }
-            $table .= ($i == 0 || $i == 6) ? "<td style='padding: 5px; text-align: left;'>Total</td>"
-                : "<td $style>" . $formattedSum . "</td>";
-        }
-        $table .= "</tr>";
+        $table .= $this->renderTotalRow($schema, $totals);
 
         $table .= "</table>";
 
         return $table;
     }
 
+    /**
+     * @param array $headings
+     * @return string
+     */
+    protected function renderTableHeader(array $headings): string
+    {
+        $header = "<tr>";
+        foreach ($headings as $heading) {
+            $header .= "<th style='padding: 5px 8px; background: #a8d7bd;'>" . $heading . "</th>";
+        }
+        $header .= "</tr>";
 
+        return $header;
+    }
+
+    /**
+     * @param $currentData
+     * @param $previousData
+     * @param array $schema
+     * @param array $totals
+     * @return string
+     */
+    protected function renderTableRow($currentData, $previousData, array $schema, array &$totals): string
+    {
+        $row = "<tr>";
+
+        $row .= $this->renderDataCells($currentData, $schema, $totals['current']);
+        $row .= $this->renderDiffCell($currentData, $previousData, $totals['diff']);
+        $row .= $this->renderDataCells($previousData, $schema, $totals['previous']);
+
+        $row .= "</tr>";
+
+        return $row;
+    }
+
+    /**
+     * @param $data
+     * @param array $schema
+     * @param array $totals
+     * @return string
+     */
+    protected function renderDataCells($data, array $schema, array &$totals): string
+    {
+        $cells = "";
+
+        if ($data) {
+            foreach ($schema as $field) {
+                if ($field != 'traffic_date') {
+                    $totals[$field] += $data->$field;
+                }
+
+                $style = "style='padding: 5px 8px; text-align: right;'";
+
+                if($field === 'traffic_date') {
+                    $cells .= "<td style='padding: 5px 8px;'>" . $data->$field . "</td>";
+                } else {
+                    $cells .= ($field === 'successful_call') ? "<td $style>" . number_format($data->$field, 0) . "</td>"
+                        : "<td $style>" .  number_format($data->$field, 2) . "</td>";
+                }
+            }
+        } else {
+            foreach ($schema as $ignored) {
+                $cells .= "<td style='padding: 5px 8px;'>N/A</td>";
+            }
+        }
+
+        return $cells;
+    }
+
+    /**
+     * @param $currentData
+     * @param $previousData
+     * @param $totalDiff
+     * @return string
+     */
+    protected function renderDiffCell($currentData, $previousData, &$totalDiff): string
+    {
+        $style = "style='padding: 5px 8px; text-align: center; background: #fff3d1;'";
+        if ($currentData && $previousData) {
+            $diff = $currentData->actual_amount_bdt - $previousData->actual_amount_bdt;
+            $totalDiff += $diff;
+            $diffFormatted = number_format($diff, 2);
+            $diffColor = $diff < 0 ? 'color: red;' : '';
+            return "<td $style><span style='{$diffColor}'>" . $diffFormatted . "</span></td>";
+        }
+
+        $value = 0;
+        if (isset($currentData->actual_amount_bdt)) {
+            $value = $currentData->actual_amount_bdt;
+        } elseif (isset($previousData->actual_amount_bdt)) {
+            $value = $previousData->actual_amount_bdt;
+        }
+
+        $totalDiff += $value;
+        $diffColor = $value < 0 ? 'color: red;' : '';
+        return "<td $style><span style='{$diffColor}'>" . number_format($value, 2) . "</span></td>";
+    }
+
+    /**
+     * @param array $schema
+     * @param array $totals
+     * @return string
+     */
+    protected function renderTotalRow(array $schema, array $totals): string
+    {
+        $row = "<tr>";
+        foreach ($schema as $field) {
+            if ($field != 'traffic_date') {
+                $row .= $field === 'successful_call' ?
+                    "<td style='padding: 5px 8px; text-align: right;'><b>" . number_format($totals['current'][$field], 0) . "</b></td>" :
+                    "<td style='padding: 5px 8px; text-align: right;'><b>" . number_format($totals['current'][$field], 2) . "</b></td>";
+            } else {
+                $row .= "<td style='padding: 5px 8px; text-align: left;'><b>Total</b></td>";
+            }
+        }
+        $diffStyle = $totals['diff'] < 0 ? "style='color: red;'" : "";
+        $row .= "<td style='padding: 5px 8px; text-align: center; background: #fff3d1;'><b $diffStyle>" . number_format($totals['diff'], 2) . "</b></td>";
+        foreach ($schema as $field) {
+            if ($field != 'traffic_date') {
+                $row .= $field === 'successful_call' ?
+                    "<td style='padding: 5px 8px; text-align: right;'><b>" . number_format($totals['previous'][$field], 0) . "</b></td>" :
+                    "<td style='padding: 5px 8px; text-align: right;'><b>" . number_format($totals['previous'][$field], 2) . "</b></td>";
+            } else {
+                $row .= "<td style='padding: 5px 8px; text-align: left;'><b>Total</b></td>";
+            }
+        }
+
+        $row .= "</tr>";
+
+        return $row;
+    }
 }

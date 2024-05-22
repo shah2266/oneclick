@@ -219,7 +219,7 @@ trait SQLQueryServices
             "
             SELECT
                 CONVERT(VARCHAR(30),cm.$dateColumn,112) AS 'order_date',
-                REPLACE(CONVERT(VARCHAR(30),cm.$dateColumn,106),' ','-') AS 'traffic_date',
+                REPLACE(CONVERT(VARCHAR(30),cm.$dateColumn, 6),' ','-') AS 'traffic_date',
                 " . ($table === 'CDR_MAIN' ? "COUNT(*)" : "SUM(SuccessfulCall)") . " AS 'successful_call',
                 SUM(cm.CallDuration/60) AS 'duration' ,
                 SUM(cm.BillDuration/60) AS 'bill_duration',
@@ -234,7 +234,7 @@ trait SQLQueryServices
                 AND cm.$dateColumn BETWEEN ex.FromActiveDate AND ex.ToActiveDate
             Group by
                 convert(VARCHAR(30),cm.$dateColumn,112),
-                convert(VARCHAR(30),cm.$dateColumn,106) ,ex.Rate
+                convert(VARCHAR(30),cm.$dateColumn, 6) ,ex.Rate
             Order BY
                 convert(VARCHAR(30),cm.$dateColumn,112)
             ";
