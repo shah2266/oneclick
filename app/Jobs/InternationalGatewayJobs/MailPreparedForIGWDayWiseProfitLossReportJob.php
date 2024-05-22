@@ -65,7 +65,7 @@ class MailPreparedForIGWDayWiseProfitLossReportJob implements ShouldQueue
             if(count(Mail::failures()) === 0) {
 
                 // Dispatch the CleanUpDirectory job after sending the email
-                // CleanUpDirectory::dispatch($files)->delay(now()->addMinutes());
+                CleanUpDirectory::dispatch($files)->delay(now()->addMinutes());
             } else {
                 Log::channel('noclick')->error('Failed to send day wise profit loss report email!!!');
             }
