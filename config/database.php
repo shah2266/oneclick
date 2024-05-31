@@ -161,6 +161,16 @@ return [
             'prefix'    => '',
         ],
 
+        'mysql8' => [
+            'driver'    => env('DB_CONNECTION_8'),
+            'host'      => env('DB_HOST_8', 'localhost'),
+            'database'  => env('DB_DATABASE_8', 'forge'),
+            'username'  => env('DB_USERNAME_8', 'forge'),
+            'password'  => env('DB_PASSWORD_8', ''),
+            'charset'   => 'utf8mb4',
+            'prefix'    => '',
+        ],
+
     ],
 
     /*
