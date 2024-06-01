@@ -120,7 +120,10 @@ class IGWDestinationWiseProfitLossReportController extends Controller
         $currentDate = Carbon::now()->subDays()->format('Ymd');
         //$currentDate = '02 May 2024';
 
-        $this->dayWiseProfitLoss();
+        dump($this->getDatesForCurrentMonth());
+        dump($this->getDatesForSubMonth());
+
+        //$this->dayWiseProfitLoss();
         //echo (env('APP_ENV') !== 'local') ? 'Production' : 'local';
         dd('test');
     }

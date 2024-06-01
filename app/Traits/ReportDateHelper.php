@@ -60,7 +60,11 @@ trait ReportDateHelper
      */
     public function getDatesForCurrentMonth(): array
     {
-        return [Carbon::now()->firstOfMonth()->format('Ymd'), Carbon::now()->subDays()->format('Ymd')] ;
+        if(Carbon::now()->startOfMonth()->format('Ymd') === Carbon::now()->format('Ymd')) {
+            return [Carbon::now()->subMonth()->startOfMonth()->format('Ymd'), Carbon::now()->subMonth()->endOfMonth()->format('Ymd')];
+        } else {
+            return [Carbon::now()->firstOfMonth()->format('Ymd'), Carbon::now()->subDays()->format('Ymd')];
+        }
     }
 
     /**
@@ -68,7 +72,12 @@ trait ReportDateHelper
      */
     public function getDatesForSubMonth(): array
     {
-        return [Carbon::now()->firstOfMonth()->subMonth()->format('Ymd'), Carbon::now()->subMonth()->subDays()->format('Ymd')] ;
+        if(Carbon::now()->startOfMonth()->format('Ymd') === Carbon::now()->format('Ymd')) {
+            return [Carbon::now()->subMonth(2)->startOfMonth()->format('Ymd'), Carbon::now()->subMonth(2)->endOfMonth()->format('Ymd')];
+        } else {
+            return [Carbon::now()->firstOfMonth()->subMonth()->format('Ymd'), Carbon::now()->subMonth()->subDays()->format('Ymd')];
+        }
+
     }
 
 

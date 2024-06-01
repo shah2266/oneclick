@@ -40,7 +40,7 @@ trait BanglaICXCdrFileProcessorTrait
             }
 
             $filteredRow = $this->filterColumns($row);
-            $batch[] = $this->prepareDataForInsertion($filteredRow);
+            $batch[] = $this->prepareDataForInsertion($sourceFilePath, $filteredRow);
 
             $rowCount++;
 
@@ -58,18 +58,18 @@ trait BanglaICXCdrFileProcessorTrait
         // Move the processed file to the destination directory
         $this->writeBackupFile($sourceFileObject, $sourceFilePath, $destinationDir);
 
-
         // Delete the original file after processing
-        //$this->deleteOriginalFile($sourceFilePath);
+        $this->deleteOriginalFile($sourceFilePath);
     }
 
     /**
+     * @param null $file
      * @param $row
      * @return array
      */
-    private function prepareDataForInsertion($row): array
+    protected function prepareDataForInsertion($file, $row): array
     {
-        $data = $this->cdrFiles($file_path);
+        $data = $this->cdrFiles($file);
         return [
             'cdr_sequence' => $row[0],
             'status' => $row[1],
@@ -89,6 +89,9 @@ trait BanglaICXCdrFileProcessorTrait
             'egress_call_info_ringing_ts' => $this->convertToTimestamp($row[15]),
             'ingress_media_record_codec_used' => $row[16],
             'egress_media_record_codec_used' => $row[17],
+            'cdr_file_name'         => $data['file_name'],
+            'file_sequence_no'  => $data['file_sequence_no'],
+            'switch_id'         => $data['switch_id'],
             'created_at' => now(),
             'updated_at' => now(),
         ];
