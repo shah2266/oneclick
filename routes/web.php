@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/develop', [IGWDestinationWiseProfitLossReportController::class, 'index']);
+Route::get('/develop', [ProcessedBanglaIcxCdrFilesController::class, 'index']);
 
 Auth::routes([
     'register' => false,

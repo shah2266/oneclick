@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\BanglaICX\ProcessBanglaIcxCdrFiles;
 use App\Console\Commands\IgwAndIosCommands\ComparisonReportCommand;
 use App\Console\Commands\IgwAndIosCommands\IofDailySummaryReportCommand;
 use App\Console\Commands\IgwAndIosCommands\IofInOutDayWiseReportCommand;
@@ -36,6 +37,7 @@ class Kernel extends ConsoleKernel
         OSWiseReportCommand::class,
         IgwCallSummaryReportCommand::class,
         GenerateIosBtrcMonthlyReportCommand::class,
+        ProcessBanglaIcxCdrFiles::class,
     ];
 
     /**
