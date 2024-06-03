@@ -28,14 +28,14 @@ class ProcessedBanglaIcxCdrFilesController extends Controller
     {
 
         // Get all files in the source directory and filter for .txt files
-        $sourceFiles = Storage::disk('F')->files('raw_files');
+        $sourceFiles = Storage::disk('F')->files('Cataleya/raw_files');
 
         $files = array_filter($sourceFiles, function($file) {
             return pathinfo($file, PATHINFO_EXTENSION) === 'txt';
         });
 
         // Get the full path of the destination directory
-        $destinationDir = Storage::disk('F')->path('processed_files');
+        $destinationDir = Storage::disk('F')->path('Cataleya/processed_files');
 
 //        $dir_partials = public_path() . DIRECTORY_SEPARATOR . 'platform' . DIRECTORY_SEPARATOR . 'icx' . DIRECTORY_SEPARATOR . 'CDR' . DIRECTORY_SEPARATOR ;
 //        $sourceDir = $dir_partials . 'raw_files';

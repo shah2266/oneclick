@@ -51,7 +51,7 @@ return [
 
         'F' => [
             'driver'        => 'local',
-            'root'          => 'F:/BanglaICX/CDR/',
+            'root'          => 'F:/CDR/BanglaICX/',
         ],
 
         's3' => [
