@@ -121,7 +121,8 @@ class IGWDestinationWiseProfitLossReportController extends Controller
         //$currentDate = '02 May 2024';
 
 
-        $this->dayWiseProfitLoss();
+        $data = $this->dayWiseProfitLoss();
+        //dump($data['totalProfit']);
         //echo (env('APP_ENV') !== 'local') ? 'Production' : 'local';
         dd('test');
     }
@@ -173,8 +174,9 @@ class IGWDestinationWiseProfitLossReportController extends Controller
         $table .= "<td>" . $this->dataRender($currentMonthResult, $previousMonthResult, $this->dateFormat($toDate, 'F-Y'), $this->dateFormat($subToDate, 'F-Y')) . "</td>";
         $table .= "</tr>";
         $table .= "</table>";
-        echo $table;
+
         return [
+            'totalProfit' => $this->currentMonthProjection($currentMonthResult['data']),
             'dayWise' => $table
         ];
     }
@@ -358,5 +360,59 @@ class IGWDestinationWiseProfitLossReportController extends Controller
         $row .= "</tr>";
 
         return $row;
+    }
+
+    /**
+     * @param $currentMonthResult
+     * @return string
+     */
+    protected function currentMonthProjection($currentMonthResult): string
+    {
+        // Initialize the total amount.
+        $totalAmount = 0;
+
+        foreach($currentMonthResult as $data) {
+            $totalAmount += $data->actual_amount_bdt;
+        }
+
+        $currentDate = Carbon::now()->format('Ymd');
+        // First date of the month
+        $firstDateOfMonth = Carbon::now()->startOfMonth()->format('Ymd');
+        // Second date of the month
+        $secondDateOfMonth = Carbon::now()->startOfMonth()->addDay()->format('Ymd');
+
+        if($currentDate === $firstDateOfMonth) {
+            $values = array_slice($currentMonthResult, 0, 1, true);
+        } elseif ($currentDate === $secondDateOfMonth) {
+            $values = array_slice($currentMonthResult, 0, 2, true);
+        } else {
+            $values = array_slice($currentMonthResult, -3, 3, true);
+        }
+
+        // Initialize the total amount for last 3 days
+        $sum = 0;
+        $totalValues = count($values);
+
+        foreach ($values as $value) {
+            $sum += $value->actual_amount_bdt;
+        }
+
+        $now            = Carbon::now();
+        $endOfMonth     = $now->copy()->endOfMonth();
+        $remainingDays  = $now->diffInDays($endOfMonth);
+
+        $projection = number_format($totalAmount + (($remainingDays+1) * ($sum/$totalValues)), 2);
+
+        $currentMonth   = $this->dateFormat($now, 'F-Y');
+        $subMonth       = $this->dateFormat($now->subMonth(), 'F-Y');
+        $style          = "style='background: #e8f9ff; border: 1px solid #3699bc; font-size:18px; padding: 8px; margin-bottom: 15px; color: #024157;'";
+
+        // Calculate and return the projected total amount for the current month
+        $result = ($firstDateOfMonth === $currentDate) ?
+                    "Total profit of $subMonth: <b>$projection</b> BDT" :
+                    "Projection for $currentMonth: <b>$projection</b> BDT";
+
+        return "<span $style> $result </span><br>";
+
     }
 }

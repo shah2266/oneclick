@@ -5,10 +5,12 @@
 
 <!-- Additional content -->
 @section('content')
+
+    <!-- Current month profit -->
+    {!! $totalProfit !!}
+
     <!-- Day wise profit loss -->
-    @foreach($dayWise as $data)
-        {!! $data !!}
-    @endforeach
+    {!! $dayWise !!}
 
 @endsection
 

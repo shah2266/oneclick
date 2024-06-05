@@ -13,7 +13,8 @@ class SendDayWiseProfitLossReport extends Mailable
     use Queueable, SerializesModels, HandlesMailTemplate;
 
     protected $files;
-    public $dayWise;
+    public    $totalProfit;
+    public    $dayWise;
     protected $template;
 
     /**
@@ -21,11 +22,12 @@ class SendDayWiseProfitLossReport extends Mailable
      *
      * @return void
      */
-    public function __construct($dayWise, $files, $template)
+    public function __construct($data, $files, $template)
     {
-        $this->dayWise  = $dayWise;
-        $this->files    = $files;
-        $this->template = $template;
+        $this->totalProfit      = $data['totalProfit'];
+        $this->dayWise          = $data['dayWise'];
+        $this->files            = $files;
+        $this->template         = $template;
     }
 
     /**
@@ -43,8 +45,9 @@ class SendDayWiseProfitLossReport extends Mailable
             ->to($toAddresses)
             ->cc($ccAddresses)
             ->view('emails.' . $this->getTemplateViewFile($this->template), [
-                'dayWise'  => $this->dayWise,
-                'template' => $this->template,
+                'totalProfit'       => $this->totalProfit,
+                'dayWise'           => $this->dayWise,
+                'template'          => $this->template,
             ]);
 
         $this->attachFiles($mail, $this->files);
