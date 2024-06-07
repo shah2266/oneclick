@@ -36,22 +36,6 @@ class SendIofInOutDayWiseReport extends Mailable
      */
     public function build(): SendIofInOutDayWiseReport
     {
-
-        //Commercial email addresses
-//        $toAddresses = ['corporate.affairs@iofbd.com'];
-//        $ccAddresses = [
-//            'zainal.abedin@btraccl.com',
-//            'rokib.mahmud@btraccl.com',
-//            'noc@iofbd.com',
-//            'btraccore@btraccl.com',
-//            'CR@btraccl.com',
-//            'noc@btraccl.com',
-//            'billing@iofbd.com',
-//            'dipendu.saha@iofbd.com',
-//            'billing.team@btraccl.com'
-//        ];
-
-
         $toAddresses = $this->getToAddresses($this->template);
         $ccAddresses = $this->getCcAddresses($this->template);
         $subject = $this->getEmailSubject($this->template);

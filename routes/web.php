@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/develop', [ProcessedBanglaIcxCdrFilesController::class, 'index']);
+Route::get('/develop', [TestController::class, 'index']);
 
 Auth::routes([
     'register' => false,

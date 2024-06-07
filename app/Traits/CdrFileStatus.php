@@ -46,18 +46,26 @@ trait CdrFileStatus
 
     protected function retrieveMissingFilesForDateRanges($fromDate, $toDate): array
     {
+        $con = ['sqlsrv1', 'sqlsrv2'];
         $missingFiles = [];
+        $conKey = 0;
 
-        foreach ($this->switch() as $switchId => $switchName) {
+        foreach ($this->platforms() as $key => $switches) {
 
-            $result = $this->cdrFilesQuery($fromDate, $toDate, $switchId);
-            $sequenceNumbers = array_column($result, 'CDRFileSequenceNo');
-            $missingSequence = $this->findMissingSequence($sequenceNumbers);
+            $platformName = $key;
 
-            // If missing sequence is found, store the result
-            if (!empty($missingSequence)) {
-                $missingFiles[$switchName .','. $fromDate .','. $toDate] = $missingSequence;
+            foreach($switches as $switchId => $switchName) {
+                $result = $this->cdrFilesQuery($con[$conKey], $fromDate, $toDate, $switchId);
+                $sequenceNumbers = array_column($result, 'CDRFileSequenceNo');
+                $missingSequence = $this->findMissingSequence($sequenceNumbers);
+
+                // If missing sequence is found, store the result
+                if (!empty($missingSequence)) {
+                    $missingFiles[$platformName . ',' . $switchName .','. $fromDate .','. $toDate] = $missingSequence;
+                }
             }
+
+            $conKey++;
         }
 
         return $missingFiles;
@@ -66,14 +74,15 @@ trait CdrFileStatus
     /**
      * Query CDR files from the database.
      *
+     * @param string $connection
      * @param string $fromDate
      * @param string $toDate
      * @param string $switchId
      * @return array
      */
-    protected function cdrFilesQuery(string $fromDate, string $toDate, string $switchId): array
+    protected function cdrFilesQuery(string $connection, string $fromDate, string $toDate, string $switchId): array
     {
-        return DB::connection('sqlsrv1')
+        return DB::connection($connection)
             ->table('dbo.CDRFILE')
             ->select('CDRFileSequenceNo', 'FileName', 'SwitchID')
             ->whereBetween('ImportStartDateTime', [$fromDate, $toDate])
@@ -104,18 +113,25 @@ trait CdrFileStatus
     }
 
     /**
-     * Get switch names and IDs.
+     * Platforms name with switch names and IDs
      *
      * @return array
      */
-    protected function switch(): array
+    protected function platforms(): array
     {
         return [
-            //'1' => 'Ericsson',
-            '2' => 'Dialogic',
-            //'3' => 'Dialogic 2',
-            '4' => 'Cataleya',
-            '5' => 'Cataleya 2'
+            'IGW' => [
+                //'1' => 'Ericsson',
+                '2' => 'Dialogic',
+                //'3' => 'Dialogic 2',
+                '4' => 'Cataleya',
+                '5' => 'Cataleya 2'
+            ],
+            'IOS' => [
+                '1' => 'Dialogic 2',
+                //'2' => 'Ericsson',
+                '3' => 'Cataleya IOS',
+            ]
         ];
     }
 
@@ -128,14 +144,14 @@ trait CdrFileStatus
     {
         $table = '<table border="1" style="background-color: #fee; border-collapse: collapse; width: 650px; text-align: center; font-family: Aptos, serif; font-size: 14px;">';
         $table .= '<tr style="height: 30px;"><th colspan="4"><b style="color: red; font-size: 16px;">CDR file missing info</b></th></tr>';
-        $table .= '<tr style="height: 25px;"><th>Switch name</th><th colspan="2">Date range</th><th>File sequence no</th></tr>';
+        $table .= '<tr style="height: 25px;"><th>Platform Name</th><th>Switch name</th><th colspan="2">Date range</th><th>File sequence no</th></tr>';
         foreach ($sequences as $key => $sequence) {
             $cdrFileInfo = explode(',', $key);
-            $table .= '<tr style="height: 25px;">';
+            $styles = ($cdrFileInfo[0] === 'IGW') ? "style='height: 25px; background: #DEF4FE;'" : "style='height: 25px; background: #F8DEFE'";
+            $table .= "<tr $styles>";
             foreach ($cdrFileInfo as $info) {
                 $table .= '<td>' . $info . '</td>';
             }
-
             // Assuming $sequence is already an array containing the file sequence numbers
             $table .= '<td>' . implode(', ', $sequence) . '</td>';
 

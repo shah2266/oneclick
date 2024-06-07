@@ -38,13 +38,6 @@ class MailPreparedForIgwOutgoingReportJob implements ShouldQueue
      */
     public function handle()
     {
-        // Commercial email addresses
-//        $toAddresses = ['alimul.razi@btraccl.com'];
-//        $ccAddresses = [
-//            'btraccore@btraccl.com',
-//            'noc@btraccl.com',
-//            'billing.team@btraccl.com'
-//        ];
 
         $template = $this->findMailTemplate('igw:call-summary-og-report');
 
