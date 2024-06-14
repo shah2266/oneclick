@@ -7,6 +7,7 @@ use App\Traits\BanglaICXCdrFileProcessorTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProcessedBanglaIcxCdrFilesController extends Controller
@@ -50,7 +51,11 @@ class ProcessedBanglaIcxCdrFilesController extends Controller
 
             // Ignore duplicate
             if($check) {
-               $this->processCdrRecord($filePath, $destinationDir);
+                Log::channel('banglaicx')->info('Processing of : '. basename($filePath) . ' will begin at ' . now());
+                $this->processCdrRecord($filePath, $destinationDir);
+                Log::channel('banglaicx')->info('The processing of file ' . basename($filePath) . ' has been completed at ' . now());
+            } else {
+                Log::channel('banglaicx')->info( 'Duplicate file: ' . basename($filePath));
             }
         }
 

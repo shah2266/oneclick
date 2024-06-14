@@ -114,6 +114,13 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
         ],
+
+        'banglaicx' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/bangla_icx_cdr.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
     ],
 
 ];
