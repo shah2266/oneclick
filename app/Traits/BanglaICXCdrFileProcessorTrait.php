@@ -27,7 +27,7 @@ trait BanglaICXCdrFileProcessorTrait
         }
 
         // Skip the first line (header) of the CSV file
-        $sourceFileObject->seek(1);
+        $sourceFileObject->fgets();
 
         $batch = [];
         $rowCount = 0;
@@ -129,18 +129,34 @@ trait BanglaICXCdrFileProcessorTrait
 
         // Reset file pointer to the start
         $sourceFileObject->rewind();
-        $sourceFileObject->seek(1); // Skip the first line again
+        $sourceFileObject->fgets(); // Skip the first line again
 
+        $buffer = '';
+        $bufferSize = 8192; // 8 KB buffer size
         while (!$sourceFileObject->eof()) {
             $row = $sourceFileObject->fgetcsv();
+
             if (empty($row) || $row[0] === null) {
                 continue; // Skip empty lines or EOF
             }
 
             $filteredRow = $this->filterColumns($row);
             $line = implode(',', $filteredRow) . ";\n";
-            $newFile->fwrite($line); // Write CSV data to the new file
+
+            $buffer .= $line;
+
+            if(strlen($buffer) >= $bufferSize) {
+                $newFile->fwrite($buffer); // Write CSV data to the new file
+                $buffer = '';
+            }
+
         }
+
+        //Write any remaining data in buffer
+        if (!empty($buffer)) {
+            $newFile->fwrite($buffer); // Write CSV data to the new file
+        }
+
     }
 
 

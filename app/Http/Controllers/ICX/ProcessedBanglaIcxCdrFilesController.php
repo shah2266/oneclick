@@ -16,7 +16,7 @@ class ProcessedBanglaIcxCdrFilesController extends Controller
 
     public function index()
     {
-        $test = $this->process();
+        //$test = $this->process();
         dd('End');
     }
 
@@ -25,40 +25,36 @@ class ProcessedBanglaIcxCdrFilesController extends Controller
     /**
      * @return JsonResponse
      */
-    public function process(): JsonResponse
-    {
-
-        // Get all files in the source directory and filter for .txt files
-        $sourceFiles = Storage::disk('F')->files('Cataleya/raw_files');
-
-        $files = array_filter($sourceFiles, function($file) {
-            return pathinfo($file, PATHINFO_EXTENSION) === 'txt';
-        });
-
-        // Get the full path of the destination directory
-        $destinationDir = Storage::disk('F')->path('Cataleya/processed_files');
-
-//        $dir_partials = public_path() . DIRECTORY_SEPARATOR . 'platform' . DIRECTORY_SEPARATOR . 'icx' . DIRECTORY_SEPARATOR . 'CDR' . DIRECTORY_SEPARATOR ;
-//        $sourceDir = $dir_partials . 'raw_files';
-//        $destinationDir = $dir_partials . 'processed_files';
-//        $files = glob($sourceDir . DIRECTORY_SEPARATOR . '*.txt');
-
-
-        foreach ($files as $file) {
-            $filePath = Storage::disk('F')->path($file);
-
-            $check = $this->processCdrFileInfo($filePath);
-
-            // Ignore duplicate
-            if($check) {
-                Log::channel('banglaicx')->info('Processing of : '. basename($filePath) . ' will begin at ' . now());
-                $this->processCdrRecord($filePath, $destinationDir);
-                Log::channel('banglaicx')->info('The processing of file ' . basename($filePath) . ' has been completed at ' . now());
-            } else {
-                Log::channel('banglaicx')->info( 'Duplicate file: ' . basename($filePath));
-            }
-        }
-
-        return response()->json(['message' => 'File processing completed.']);
-    }
+//    public function process(): JsonResponse
+//    {
+//
+//        // Get all files in the source directory and filter for .txt files
+//        $sourceFiles = Storage::disk('F')->files('Cataleya/raw_files');
+//
+//        $files = array_filter($sourceFiles, function($file) {
+//            return pathinfo($file, PATHINFO_EXTENSION) === 'txt';
+//        });
+//
+//        // Get the full path of the destination directory
+//        $destinationDir = Storage::disk('F')->path('Cataleya/processed_files');
+//
+//        foreach ($files as $file) {
+//            $filePath = Storage::disk('F')->path($file);
+//
+//            $check = $this->processCdrFileInfo($filePath);
+//
+//            // Ignore duplicate
+//            if($check) {
+//                Log::channel('banglaicx')->info('Processing of : '. basename($filePath) . ' will begin at ' . now());
+//                echo 'Processing of : '. basename($filePath) . ' will begin at ' . now() ."\n";
+//                $this->processCdrRecord($filePath, $destinationDir);
+//                echo "<span style='color: darkolivegreen'>The processing of file " . basename($filePath) . " has been completed at " . now() ."</span>\n";
+//                Log::channel('banglaicx')->info('The processing of file ' . basename($filePath) . ' has been completed at ' . now());
+//            } else {
+//                Log::channel('banglaicx')->info( 'Duplicate file: ' . basename($filePath));
+//            }
+//        }
+//
+//        return response()->json(['message' => 'File processing completed.']);
+//    }
 }
