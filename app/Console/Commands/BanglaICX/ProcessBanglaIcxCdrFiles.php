@@ -48,10 +48,10 @@ class ProcessBanglaIcxCdrFiles extends Command
         while($this->running) {
 
             //$this->info('Starting to process cdr files...');
-            $start =  microtime(true);
+            //$start =  microtime(true);
             $this->process();
             //$this->info('File processing completed.');
-            echo 'Total time' . (microtime(true) - $start);
+            //echo 'Total process (/session) time: ' . (microtime(true) - $start) ."\n";
             sleep(5);
         }
         return 0;
