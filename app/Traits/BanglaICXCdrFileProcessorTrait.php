@@ -131,8 +131,8 @@ trait BanglaICXCdrFileProcessorTrait
         $sourceFileObject->rewind();
         $sourceFileObject->fgets(); // Skip the first line again
 
-        $buffer = '';
-        $bufferSize = 8192; // 8 KB buffer size
+        //$buffer = '';
+        //$bufferSize = 8192; // 8 KB buffer size
         while (!$sourceFileObject->eof()) {
             $row = $sourceFileObject->fgetcsv();
 
@@ -143,19 +143,21 @@ trait BanglaICXCdrFileProcessorTrait
             $filteredRow = $this->filterColumns($row);
             $line = implode(',', $filteredRow) . ";\n";
 
-            $buffer .= $line;
+            $newFile->fwrite($line); // Write CSV data to the new file
 
-            if(strlen($buffer) >= $bufferSize) {
-                $newFile->fwrite($buffer); // Write CSV data to the new file
-                $buffer = '';
-            }
+//            $buffer .= $line;
+//
+//            if(strlen($buffer) >= $bufferSize) {
+//                $newFile->fwrite($buffer); // Write CSV data to the new file
+//                $buffer = '';
+//            }
 
         }
 
-        //Write any remaining data in buffer
-        if (!empty($buffer)) {
-            $newFile->fwrite($buffer); // Write CSV data to the new file
-        }
+//        //Write any remaining data in buffer
+//        if (!empty($buffer)) {
+//            $newFile->fwrite($buffer); // Write CSV data to the new file
+//        }
 
     }
 
