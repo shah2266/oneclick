@@ -80,6 +80,15 @@ trait ReportDateHelper
 
     }
 
+    public function getYesterday(): string
+    {
+        return $this->dateFormat(Carbon::yesterday(),'Y-m-d');
+    }
+
+    public function getToday(): string
+    {
+        return $this->dateFormat(Carbon::now(),'Y-m-d');
+    }
 
     /**
      * @param $date

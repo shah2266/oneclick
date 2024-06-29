@@ -9,6 +9,7 @@ use SplFileObject;
 
 trait BanglaICXCdrFileProcessorTrait
 {
+    use ReportDateHelper;
 
     private $columnsToDisplay = [1, 3, 9, 10, 11, 18, 26, 31, 32, 38, 39, 44, 49, 50, 56, 57, 92, 125];
 
@@ -258,6 +259,22 @@ trait BanglaICXCdrFileProcessorTrait
         // Query the database to check if the file already exists
         $existingFiles = $this->QuerySelectOperation('mysql8', $query);
         return empty($existingFiles);
+    }
+
+    private function deleteNoneUniqueFileRecords($file_name): bool
+    {
+        preg_match('/\.(\d+)$/', $file_name, $matches);
+        $sequence_no = $matches[1];
+
+        $raw_records = /** @lang text */ "DELETE FROM bicx_cdr_main
+                        WHERE created_at BETWEEN '" . $this->getYesterday() . " 00:00:00' AND '" . $this->getToday() . " 23:59:59'
+                        AND file_sequence_no = $sequence_no";
+
+        $file_records = /** @lang text */ "DELETE FROM cdr_files WHERE file_sequence_no = $sequence_no";
+        $this->QuerySelectOperation('mysql8', $raw_records);
+        $this->QuerySelectOperation('mysql8', $file_records);
+
+        return true;
     }
 
     /**

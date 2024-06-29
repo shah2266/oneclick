@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands\BanglaICX;
 
-use App\Http\Controllers\ICX\ProcessedBanglaIcxCdrFilesController;
 use App\Traits\BanglaICXCdrFileProcessorTrait;
 use Illuminate\Console\Command;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -84,11 +82,14 @@ class ProcessBanglaIcxCdrFiles extends Command
 
                 $output->writeln('<fg=magenta>Processing of : ' . basename($filePath) . ' will begin at ' . now() . '</>');
                 $this->processCdrRecord($filePath, $destinationDir);
-                $output->writeln('The processing of file ' . basename($filePath) . ' has been completed at ' . now() . '</>');
+                $output->writeln('The processing of file ' . basename($filePath) . ' has been completed at ' . now());
 
                 Log::channel('banglaicx')->info('The processing of file ' . basename($filePath) . ' has been completed at ' . now());
             } else {
                 Log::channel('banglaicx')->info( 'Duplicate file: ' . basename($filePath));
+                $output->writeln('<fg=red>Duplicate file : ' . basename($filePath) . ' issue resolving ' . now() . '</>');
+                $this->deleteNoneUniqueFileRecords(basename($filePath, '.txt'));
+                $output->writeln('<fg=green>The file ' . basename($filePath) . ' has been passed to the re-processing state.' . now() . '</>');
             }
         }
 
