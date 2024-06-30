@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class ProcessedBanglaIcxCdrFilesController extends Controller
+class BanglaIcxCdrFilesController extends Controller
 {
     use BanglaICXCdrFileProcessorTrait;
 
-    public function index()
+    public function cdrFileStatus()
     {
         //$test = $this->process();
         dd('End');

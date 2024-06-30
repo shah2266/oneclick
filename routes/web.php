@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\ICX\BanglaicxReportController;
-use App\Http\Controllers\ICX\ProcessedBanglaIcxCdrFilesController;
+use App\Http\Controllers\ICX\BanglaIcxCdrFilesController;
 use App\Http\Controllers\IGW\BtrcReportController;
 use App\Http\Controllers\IGW\CallSummaryController;
 use App\Http\Controllers\IGW\IGWDayWiseDataCrossCheckController;
@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/develop', [TestController::class, 'index']);
+Route::get('/develop', [BanglaIcxCdrFilesController::class, 'index']);
 
 Auth::routes([
     'register' => false,

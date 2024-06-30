@@ -363,6 +363,37 @@ trait SQLQueryServices
         return ['data' => $data, 'total_count' => $totalCount];
     }
 
+
+    /**
+     * @param $file_name
+     * @return bool
+     */
+    protected function isFileUnique($file_name): bool
+    {
+        $query = /** @lang text */
+            "SELECT file_name FROM cdr_files WHERE file_name = '$file_name'";
+
+        // Query the database to check if the file already exists
+        $existingFiles = $this->QueryExecuted('mysql8', $query);
+        return empty($existingFiles);
+    }
+
+    protected function deleteNoneUniqueFileRecords($file_name): bool
+    {
+        preg_match('/\.(\d+)$/', $file_name, $matches);
+        $sequence_no = $matches[1];
+
+        $raw_records = /** @lang text */ "DELETE FROM bicx_cdr_main
+                        WHERE created_at BETWEEN '" . $this->getYesterday() . " 00:00:00' AND '" . $this->getToday() . " 23:59:59'
+                        AND file_sequence_no = $sequence_no";
+
+        $file_records = /** @lang text */ "DELETE FROM cdr_files WHERE file_sequence_no = $sequence_no";
+        $this->QueryExecuted('mysql8', $raw_records);
+        $this->QueryExecuted('mysql8', $file_records);
+
+        return true;
+    }
+
     /**
      * @param string $connectionName
      * @param string $query
@@ -371,6 +402,11 @@ trait SQLQueryServices
     private function QueryExecuted(string $connectionName, string $query): array
     {
         return DB::connection($connectionName)->select($query);
+    }
+
+    protected function insertOperation($table, $query)
+    {
+        DB::connection('mysql8')->table($table)->insert($query);
     }
 
 }

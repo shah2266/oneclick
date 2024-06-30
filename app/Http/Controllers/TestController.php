@@ -26,9 +26,10 @@ class TestController
         $toDate = $currentDate->copy()->subDay()->endOfDay();
 
         $query = DB::connection('mysql8')->select(
-            "select file_sequence_no, file_name from cdr_files where created_at between '2024-06-13 00:00:00' and '2024-06-19 23:59:59'"
+            "select file_sequence_no, file_name from cdr_files where created_at between '2024-06-18 00:00:00' and '2024-06-30 23:59:59'"
         );
 
+        dump($query);
         $sequenceNumbers = array_column($query, 'file_sequence_no');
 
         //$this->cdrFilesQuery('mysql8', $fromDate, $toDate, 1);
@@ -40,11 +41,10 @@ class TestController
         $before_rest_sequences = array_slice($sequenceNumbers, 0, $reset_index);
         $after_reset_sequences = array_slice($sequenceNumbers, $reset_index);
 
-        dump($after_reset_sequences);
-        dump($after_reset_sequences);
-        //$test = array_merge($this->findMissingSequences($before_rest_sequences), $this->findMissingSequences($after_reset_sequences));
 
-        //dump($test);
+       // $test = array_merge($this->findMissingSequences($before_rest_sequences), $this->findMissingSequences($after_reset_sequences));
+
+        dump($after_reset_sequences);
         //$data = $this->fileMissingNotifications($sequences);
         //echo $data;
         dd('End');

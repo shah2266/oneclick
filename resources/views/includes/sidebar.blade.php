@@ -248,6 +248,13 @@
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <a
+                            class="nav-link {{ request()->is('platform/banglaicx/cdr-file/status') ? 'active' : '' }}"
+                            href="{{ url('platform/banglaicx/cdr-file/status') }}">
+                            CDR File Status
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
                             class="nav-link {{ request()->is('platform/banglaicx/report/callsummary') ? 'active' : '' }}"
                             href="{{ url('platform/banglaicx/report/callsummary') }}">
                             BanglaICX daily report

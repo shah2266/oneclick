@@ -9,7 +9,7 @@ use SplFileObject;
 
 trait BanglaICXCdrFileProcessorTrait
 {
-    use ReportDateHelper;
+    use ReportDateHelper, SQLQueryServices;
 
     private $columnsToDisplay = [1, 3, 9, 10, 11, 18, 26, 31, 32, 38, 39, 44, 49, 50, 56, 57, 92, 125];
 
@@ -132,8 +132,6 @@ trait BanglaICXCdrFileProcessorTrait
         $sourceFileObject->rewind();
         $sourceFileObject->fgets(); // Skip the first line again
 
-        //$buffer = '';
-        //$bufferSize = 8192; // 8 KB buffer size
         while (!$sourceFileObject->eof()) {
             $row = $sourceFileObject->fgetcsv();
 
@@ -145,21 +143,7 @@ trait BanglaICXCdrFileProcessorTrait
             $line = implode(',', $filteredRow) . ";\n";
 
             $newFile->fwrite($line); // Write CSV data to the new file
-
-//            $buffer .= $line;
-//
-//            if(strlen($buffer) >= $bufferSize) {
-//                $newFile->fwrite($buffer); // Write CSV data to the new file
-//                $buffer = '';
-//            }
-
         }
-
-//        //Write any remaining data in buffer
-//        if (!empty($buffer)) {
-//            $newFile->fwrite($buffer); // Write CSV data to the new file
-//        }
-
     }
 
 
@@ -248,36 +232,6 @@ trait BanglaICXCdrFileProcessorTrait
     }
 
     /**
-     * @param $file_name
-     * @return bool
-     */
-    private function isFileUnique($file_name): bool
-    {
-        $query = /** @lang text */
-            "SELECT file_name FROM cdr_files WHERE file_name = '$file_name'";
-
-        // Query the database to check if the file already exists
-        $existingFiles = $this->QuerySelectOperation('mysql8', $query);
-        return empty($existingFiles);
-    }
-
-    private function deleteNoneUniqueFileRecords($file_name): bool
-    {
-        preg_match('/\.(\d+)$/', $file_name, $matches);
-        $sequence_no = $matches[1];
-
-        $raw_records = /** @lang text */ "DELETE FROM bicx_cdr_main
-                        WHERE created_at BETWEEN '" . $this->getYesterday() . " 00:00:00' AND '" . $this->getToday() . " 23:59:59'
-                        AND file_sequence_no = $sequence_no";
-
-        $file_records = /** @lang text */ "DELETE FROM cdr_files WHERE file_sequence_no = $sequence_no";
-        $this->QuerySelectOperation('mysql8', $raw_records);
-        $this->QuerySelectOperation('mysql8', $file_records);
-
-        return true;
-    }
-
-    /**
      * @return string[]
      */
     private function switchName(): array
@@ -286,43 +240,6 @@ trait BanglaICXCdrFileProcessorTrait
             1 => 'Cataleya'
         ];
     }
-
-
-    /**
-     * @param $value
-     * @return string|null
-     */
-//    private function convertToTimestamp($value): ?string
-//    {
-//        if (!empty($value) && strlen($value) >= 14) {
-//            try {
-//                // Assuming format is YYYYMMDDHHMMSSfff
-//                $year = substr($value, 0, 4);
-//                $month = substr($value, 4, 2);
-//                $day = substr($value, 6, 2);
-//                $hour = substr($value, 8, 2);
-//                $minute = substr($value, 10, 2);
-//                $second = substr($value, 12, 2);
-//                $millisecond = substr($value, 14, 3);
-//
-//                // Validate datetime components
-//                if (checkdate($month, $day, $year) && $hour <= 23 && $minute <= 59 && $second <= 59) {
-//                    // Create a datetime string
-//                    $dateTime = "$year-$month-$day $hour:$minute:$second.$millisecond";
-//                    dump("Constructed DateTime: $dateTime");
-//                    // Parse datetime string to Carbon instance
-//                    return Carbon::createFromFormat('Y-m-d H:i:s.u', $dateTime)->toDateTimeString();
-//                } else {
-//
-//                    return null; // Return null if datetime components are invalid
-//                }
-//            } catch (\Exception $e) {
-//                error_log("Parsing error: " . $e->getMessage());
-//                return null; // Return null if there is a parsing error
-//            }
-//        }
-//        return null;
-//    }
 
     private function convertToTimestamp($value): ?string
     {
@@ -361,14 +278,4 @@ trait BanglaICXCdrFileProcessorTrait
         return null; // Return null if the input value is empty or shorter than 14 characters
     }
 
-    private function QuerySelectOperation(string $connectionName, string $query): array
-    {
-        return DB::connection($connectionName)->select($query);
-    }
-
-
-    private function insertOperation($table, $query)
-    {
-        DB::connection('mysql8')->table($table)->insert($query);
-    }
 }
