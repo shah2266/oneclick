@@ -375,6 +375,9 @@ class IGWDestinationWiseProfitLossReportController extends Controller
             $totalAmount += $data->actual_amount_bdt;
         }
 
+        // Last month total profit
+        $subMonthTotalProfit = number_format($totalAmount, 2);
+
         $currentDate = Carbon::now()->format('Ymd');
         // First date of the month
         $firstDateOfMonth = Carbon::now()->startOfMonth()->format('Ymd');
@@ -409,7 +412,7 @@ class IGWDestinationWiseProfitLossReportController extends Controller
 
         // Calculate and return the projected total amount for the current month
         $result = ($firstDateOfMonth === $currentDate) ?
-                    "Total profit of $subMonth: <b>$projection</b> BDT" :
+                    "Total profit of $subMonth: <b> $subMonthTotalProfit </b> BDT" :
                     "Projection for $currentMonth: <b>$projection</b> BDT";
 
         return "<span $style> $result </span><br>";
