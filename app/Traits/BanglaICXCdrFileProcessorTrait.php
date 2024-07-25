@@ -16,7 +16,8 @@ trait BanglaICXCdrFileProcessorTrait
     public function processCdrRecord($sourceFilePath, $destinationDir)
     {
         $table = 'BICX_CDR_MAIN';
-        $batchSize = 100; // Number of rows to process in each batch
+        // $batchSize = 100; // Number of rows to process in each batch; For MySQL
+        $batchSize = 50; // Number of rows to process in each batch; for mssql
 
         try {
             $sourceFileObject = new SplFileObject($sourceFilePath, 'r');

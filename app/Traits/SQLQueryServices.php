@@ -383,13 +383,13 @@ trait SQLQueryServices
         preg_match('/\.(\d+)$/', $file_name, $matches);
         $sequence_no = $matches[1];
 
-        $raw_records = /** @lang text */ "DELETE FROM bicx_cdr_main
-                        WHERE created_at BETWEEN '" . $this->getYesterday() . " 00:00:00' AND '" . $this->getToday() . " 23:59:59'
-                        AND file_sequence_no = $sequence_no";
+//        $raw_records = /** @lang text */ "DELETE FROM bicx_cdr_main
+//                        WHERE created_at BETWEEN '" . $this->getYesterday() . " 00:00:00' AND '" . $this->getToday() . " 23:59:59'
+//                        AND file_sequence_no = $sequence_no";
 
-        $file_records = /** @lang text */ "DELETE FROM cdr_files WHERE file_sequence_no = $sequence_no";
-        $this->QueryExecuted('mysql8', $raw_records);
-        $this->QueryExecuted('mysql8', $file_records);
+        //$file_records = /** @lang text */ "DELETE FROM cdr_files WHERE file_sequence_no = $sequence_no";
+        $this->deleteOperation('mysql8', 'bicx_cdr_main', $sequence_no);
+        $this->deleteOperation('mysql8', 'cdr_files', $sequence_no);
 
         return true;
     }
@@ -402,6 +402,21 @@ trait SQLQueryServices
     private function QueryExecuted(string $connectionName, string $query): array
     {
         return DB::connection($connectionName)->select($query);
+    }
+
+    /**
+     * @param string $connectionName
+     * @param $table
+     * @param $sequence_no
+     * @return void
+     */
+    protected function deleteOperation(string $connectionName, $table, $sequence_no)
+    {
+        DB::connection($connectionName)
+            ->table($table)
+            ->whereBetween('created_at', [$this->getYesterday().' 00:00:00', $this->getToday().' 23:59:59'])
+            ->where('file_sequence_no', $sequence_no)
+            ->delete();
     }
 
     protected function insertOperation($table, $query)
