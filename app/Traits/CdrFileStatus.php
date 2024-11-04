@@ -128,7 +128,7 @@ trait CdrFileStatus
                 '5' => 'Cataleya 2'
             ],
             'IOS' => [
-                '1' => 'Dialogic 2',
+                //'1' => 'Dialogic 2',
                 //'2' => 'Ericsson',
                 '3' => 'Cataleya IOS',
             ]
