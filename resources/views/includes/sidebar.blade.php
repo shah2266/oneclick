@@ -1,7 +1,7 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-        <a class="sidebar-brand brand-logo" href="{{ url('/home') }}">Oneclick</a>
-        <a class="sidebar-brand brand-logo-mini" href="{{ url('/home') }}">OC</a>
+        <a class="sidebar-brand brand-logo" href="{{ url('/home') }}">{{$app->app_name}}</a>
+        <a class="sidebar-brand brand-logo-mini" href="{{ url('/home') }}">{{$app->short_name}}</a>
     </div>
     <ul class="nav">
         <li class="nav-item profile">
@@ -19,7 +19,7 @@
                 <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
                 <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list"
                      aria-labelledby="profile-dropdown">
-                    <a href="#" class="dropdown-item preview-item">
+                    <a href="{{ url('setting/users/' . Auth::user()->id . '/edit') }}" class="dropdown-item preview-item">
                         <div class="preview-thumbnail">
                             <div class="preview-icon bg-dark rounded-circle">
                                 <i class="mdi mdi-settings text-primary"></i>
@@ -30,7 +30,7 @@
                         </div>
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item preview-item">
+                    <a href="{{ url('setting/users/' . Auth::user()->id . '/edit') }}" class="dropdown-item preview-item">
                         <div class="preview-thumbnail">
                             <div class="preview-icon bg-dark rounded-circle">
                                 <i class="mdi mdi-onepassword  text-info"></i>
@@ -268,14 +268,14 @@
         @if(Auth::user()->user_type != 2)
         <!-- Noclick -->
         <li class="nav-item menu-items {{ (request()->is('noclick') OR request()->is('noclick/*')) ? 'active' : '' }}">
-            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+            <a class="nav-link" data-toggle="collapse" href="#noclick" aria-expanded="false" aria-controls="noclick">
             <span class="menu-icon">
               <i class="mdi mdi-alarm"></i>
             </span>
                 <span class="menu-title">Noclick dashboard</span>
                 <i class="menu-arrow"></i>
             </a>
-            <div class="collapse {{ (request()->is('noclick') OR request()->is('noclick/*')) ? 'show' : '' }}" id="auth">
+            <div class="collapse {{ (request()->is('noclick') OR request()->is('noclick/*')) ? 'show' : '' }}" id="noclick">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
                         <a class="nav-link
@@ -307,19 +307,29 @@
         @endif
 
         <!-- Setting -->
-        <li class="nav-item menu-items {{ (request()->is('users') OR request()->is('users/*')) ? 'active' : '' }}">
-            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+        <li class="nav-item menu-items {{ (request()->is('setting') OR request()->is('setting/*')) ? 'active' : '' }}">
+            <a class="nav-link" data-toggle="collapse" href="#setting" aria-expanded="false" aria-controls="setting">
             <span class="menu-icon">
               <i class="mdi mdi-settings"></i>
             </span>
                 <span class="menu-title">Setting</span>
                 <i class="menu-arrow"></i>
             </a>
-            <div class="collapse {{ (request()->is('users') OR request()->is('users/*')) ? 'show' : '' }}" id="auth">
+            <div class="collapse {{ (request()->is('setting') OR request()->is('setting/*')) ? 'show' : '' }}" id="setting">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="{{ url('users') }}"> Users</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ (request()->is('setting/apps') OR request()->is('setting/apps/*')) ? 'active' : '' }}"
+                           href="{{ url('setting/apps') }}"> App setting</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ (request()->is('setting/users') OR request()->is('setting/users/*')) ? 'active' : '' }}"
+                           href="{{ url('setting/users') }}"> Users</a>
+                    </li>
                     @if(Auth::user()->user_type != 2)
-                    <li class="nav-item"> <a class="nav-link" href="{{ url('themes') }}"> Themes</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ (request()->is('setting/themes') OR request()->is('setting/themes/*')) ? 'active' : '' }}"
+                           href="{{ url('setting/themes') }}"> Themes</a>
+                    </li>
                     @endif
                 </ul>
             </div>

@@ -1,9 +1,8 @@
 @extends('layouts.master')
-@section('title', 'Themes')
+@section('title', 'App setting')
 
-@section('section-title', 'Update theme info of -> ' . $theme->theme_name)
-@section('currentPage', 'Themes')
-
+@section('section-title', 'Edit this info')
+@section('currentPage', 'Setting')
 
 @section('content')
 
@@ -11,13 +10,12 @@
     @include('includes.display-message')
 
     <div class="row">
-
         <div class="col-lg-12 grid-margin">
             <div class="float-right">
                 <a
                     class="btn btn-inverse-info btn-fw"
-                    href="{{ route('themes.index') }}">
-                    Back to themes page
+                    href="{{ route('apps.index') }}">
+                    Back
                 </a>
             </div>
         </div>
@@ -26,10 +24,10 @@
             <div class="card">
                 <div class="card-body">
                     <!-- form start -->
-                    <form role="form" method="POST" action="{{ route('themes.update', ['theme' => $theme->id]) }}" enctype="multipart/form-data">
+                    <form role="form" method="POST" action="{{ route('apps.update', ['setting' => $setting->id]) }}" enctype="multipart/form-data">
                         @method('PATCH')
-                        @include('auth.theme.form')
-                        <button type="submit" class="btn btn-inverse-primary btn-fw">Update theme info</button>
+                        @include('setting.form')
+                        <button type="submit" class="btn btn-inverse-primary btn-fw">Update</button>
                     </form>
                 </div>
             </div>

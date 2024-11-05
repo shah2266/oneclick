@@ -59,7 +59,7 @@
                                                     aria-haspopup="true" aria-expanded="false"> Action
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuOutlineButton1">
-                                                <a class="dropdown-item" href="{{ url('themes/'.$theme->id.'/edit') }}">Edit info</a>
+                                                <a class="dropdown-item" href="{{ url('setting/themes/'.$theme->id.'/edit') }}">Edit info</a>
 
                                                 <div class="dropdown-divider"></div>
                                                 <!-- Trigger modal when clicking the "Delete" link -->

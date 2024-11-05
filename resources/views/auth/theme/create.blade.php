@@ -16,7 +16,7 @@
             <div class="float-right">
                 <a
                     class="btn btn-inverse-info btn-fw"
-                    href="{{ URL::to( 'themes' ) }}">
+                    href="{{ route('themes.index') }}">
                     Back to themes page
                 </a>
             </div>

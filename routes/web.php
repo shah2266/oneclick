@@ -24,6 +24,7 @@ use App\Http\Controllers\Noclick\NoclickScheduleController;
 use App\Http\Controllers\SERVER\ConnectivityController;
 use App\Http\Controllers\SERVER\DatabaseStatusController;
 use App\Http\Controllers\SERVER\ServerListController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserThemeController;
 use Illuminate\Support\Facades\Auth;
@@ -66,11 +67,13 @@ Route::get('testing', [TestController::class, 'testing'])->name('cdr.status.test
 
 
 Route::group([
+    'prefix' => 'setting/',
     'middleware' => 'auth'
 ], function() {
     Route::resource('users', UserController::class);
     Route::post('/toggle-theme', [UserThemeController::class, 'toggleTheme'])->name('toggleTheme');
     Route::resource('themes', UserThemeController::class)->middleware('check.user.type:2');
+    Route::resource('apps', SettingController::class)->parameters(['apps' => 'setting'])->middleware('check.user.type:2');
 });
 
 Route::group([

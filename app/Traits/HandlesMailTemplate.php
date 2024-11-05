@@ -3,8 +3,10 @@
 namespace App\Traits;
 use App\Models\NoclickCommand;
 use App\Models\NoclickMailTemplate;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 trait HandlesMailTemplate {
     use ReportDateHelper;
@@ -14,8 +16,12 @@ trait HandlesMailTemplate {
      */
     protected function getToAddresses($template): array
     {
-        //return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['to_email_addresses']) : ['shah.alam@btraccl.com'];
-        return $this->trimExplodedString($template['to_email_addresses']);
+        $app = $this->getActiveSetting();
+        if(Str::lower($app->environment) === 'local') {
+            return ['demo@demo.com']; //Test email
+        } else {
+            return $this->trimExplodedString($template['to_email_addresses']);
+        }
     }
 
     /**
@@ -24,9 +30,13 @@ trait HandlesMailTemplate {
      */
     protected function getCcAddresses($template): array
     {
-        // Call the trimExplodedString function with the 'cc_email_addresses' value from the template
-        //return (env('APP_ENV') !== 'local') ? $this->trimExplodedString($template['cc_email_addresses']) : ['shah.alam@btraccl.com','shaha2266@gmail.com']; // This test email
-        return $this->trimExplodedString($template['cc_email_addresses']);
+        $app = $this->getActiveSetting();
+        if(Str::lower($app->environment) === 'local') {
+            return ['demo@demo.com']; // Test email
+        } else {
+            // Call the trimExplodedString function with the 'cc_email_addresses' value from the template
+            return $this->trimExplodedString($template['cc_email_addresses']);
+        }
     }
 
     /**
@@ -133,5 +143,10 @@ trait HandlesMailTemplate {
     protected function maskedEmailName()
     {
         return env('APP_NAME');
+    }
+
+    protected function getActiveSetting()
+    {
+        return Setting::where('status', 'active')->first();
     }
 }

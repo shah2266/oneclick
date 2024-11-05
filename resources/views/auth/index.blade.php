@@ -62,7 +62,7 @@
                                                     aria-haspopup="true" aria-expanded="false"> Action
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuOutlineButton1">
-                                                <a class="dropdown-item" href="{{ url('users/'.$user->id.'/edit') }}">Edit info</a>
+                                                <a class="dropdown-item" href="{{ url('setting/users/'.$user->id.'/edit') }}">Edit info</a>
 
                                                 @if(Auth::user()->user_type != 2)
                                                 <div class="dropdown-divider"></div>

@@ -15,7 +15,7 @@
             <a
                 class="btn btn-inverse-info btn-fw"
                 href="{{ URL::to( 'server/info' ) }}">
-                Back to server manage page
+                Back
             </a>
         </div>
     </div>

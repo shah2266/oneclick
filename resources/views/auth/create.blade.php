@@ -16,7 +16,7 @@
             <div class="float-right">
                 <a
                     class="btn btn-inverse-info btn-fw"
-                    href="{{ URL::to( 'users' ) }}">
+                    href="{{ route('users.index') }}">
                     Back to users page
                 </a>
             </div>

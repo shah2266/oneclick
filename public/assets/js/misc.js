@@ -133,45 +133,6 @@
           location.reload();
       });
 
-      // // Update modal content based on selected template for delete operation
-      // $('#deleteMailTemplate').on('show.bs.modal', function (event) {
-      //
-      //     const button = $(event.relatedTarget);
-      //     const templateId = button.data('template-id');
-      //     $('#delete-form').attr('action', '/noclick/mail/templates/' + templateId);
-      //
-      //     //console.log(templateId);
-      //
-      //     // Update modal body content dynamically
-      //     $('#deleteModalBody').html('Are you sure you want to delete the Noclick Mail Template with ID ' + templateId + ' ?');
-      // });
-      //
-      // // Update modal content based on selected schedule for delete operation
-      // $('#deleteSchedule').on('show.bs.modal', function (event) {
-      //
-      //     const button = $(event.relatedTarget);
-      //     const scheduleId = button.data('schedule-id');
-      //     $('#delete-form').attr('action', '/noclick/schedules/' + scheduleId);
-      //
-      //     //console.log(templateId);
-      //
-      //     // Update modal body content dynamically
-      //     $('#deleteModalBody').html('Are you sure you want to delete the Noclick schedule with ID ' + scheduleId + ' ?');
-      // });
-      //
-      // // Update modal content based on selected schedule for delete operation
-      // $('#deleteUser').on('show.bs.modal', function (event) {
-      //
-      //     const button = $(event.relatedTarget);
-      //     const userId = button.data('user-id');
-      //     $('#delete-form').attr('action', '/users/' + userId);
-      //
-      //     //console.log(templateId);
-      //
-      //     // Update modal body content dynamically
-      //     $('#deleteModalBody').html('Are you sure you want to delete the user with ID ' + userId + ' ?');
-      // });
-
       function updateDeleteModalContent(modalId, entityName, urlPrefix) {
           $(modalId).on('show.bs.modal', function (event) {
               const button = $(event.relatedTarget);
@@ -186,8 +147,8 @@
       updateDeleteModalContent('#deleteMailTemplate', 'template', 'noclick/mail/templates');
       updateDeleteModalContent('#deleteCommand', 'command', 'noclick/commands');
       updateDeleteModalContent('#deleteSchedule', 'schedule', 'noclick/schedules');
-      updateDeleteModalContent('#deleteUser', 'user', 'users');
-      updateDeleteModalContent('#deleteTheme', 'theme', 'themes');
+      updateDeleteModalContent('#deleteUser', 'user', 'setting/users');
+      updateDeleteModalContent('#deleteSetting', 'setting', 'setting/apps');
 
   });
 })(jQuery);
