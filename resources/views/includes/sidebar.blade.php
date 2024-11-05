@@ -1,7 +1,7 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-        <a class="sidebar-brand brand-logo" href="{{ url('/home') }}">{{$app->app_name}}</a>
-        <a class="sidebar-brand brand-logo-mini" href="{{ url('/home') }}">{{$app->short_name}}</a>
+        <a class="sidebar-brand brand-logo" href="{{ url('/home') }}">{{$app->app_name ?? 'Noclick'}}</a>
+        <a class="sidebar-brand brand-logo-mini" href="{{ url('/home') }}">{{$app->short_name ?? 'NC'}}</a>
     </div>
     <ul class="nav">
         <li class="nav-item profile">
@@ -215,13 +215,13 @@
                             IOF daily report
                         </a>
                     </li>
-{{--                    <li class="nav-item">--}}
-{{--                        <a--}}
-{{--                            class="nav-link {{ request()->is('platform/igwandios/report/iof/callsummary/old') ? 'active' : '' }}"--}}
-{{--                            href="{{ url('platform/igwandios/report/iof/callsummary/old') }}">--}}
-{{--                            <span class="text-red">IOF Daily Report</span><span class="label pull-right bg-red">Old</span>--}}
-{{--                        </a>--}}
-{{--                    </li>--}}
+                    {{--                    <li class="nav-item">--}}
+                    {{--                        <a--}}
+                    {{--                            class="nav-link {{ request()->is('platform/igwandios/report/iof/callsummary/old') ? 'active' : '' }}"--}}
+                    {{--                            href="{{ url('platform/igwandios/report/iof/callsummary/old') }}">--}}
+                    {{--                            <span class="text-red">IOF Daily Report</span><span class="label pull-right bg-red">Old</span>--}}
+                    {{--                        </a>--}}
+                    {{--                    </li>--}}
                     <li class="nav-item">
                         <a
                             class="nav-link {{ request()->is('platform/igwandios/report/comparison') ? 'active' : '' }}"
@@ -266,44 +266,44 @@
         <!-- #BanglaICX Platform -->
 
         @if(Auth::user()->user_type != 2)
-        <!-- Noclick -->
-        <li class="nav-item menu-items {{ (request()->is('noclick') OR request()->is('noclick/*')) ? 'active' : '' }}">
-            <a class="nav-link" data-toggle="collapse" href="#noclick" aria-expanded="false" aria-controls="noclick">
+            <!-- Noclick -->
+            <li class="nav-item menu-items {{ (request()->is('noclick') OR request()->is('noclick/*')) ? 'active' : '' }}">
+                <a class="nav-link" data-toggle="collapse" href="#noclick" aria-expanded="false" aria-controls="noclick">
             <span class="menu-icon">
               <i class="mdi mdi-alarm"></i>
             </span>
-                <span class="menu-title">Noclick dashboard</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse {{ (request()->is('noclick') OR request()->is('noclick/*')) ? 'show' : '' }}" id="noclick">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link
+                    <span class="menu-title">Noclick dashboard</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse {{ (request()->is('noclick') OR request()->is('noclick/*')) ? 'show' : '' }}" id="noclick">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link
                             {{ (request()->is('noclick/schedules') OR request()->is('noclick/schedules/*')) ? 'active' : '' }}"
-                           href="{{ url('noclick/schedules/dashboard') }}">
-                            Noclick schedules
-                        </a>
-                    </li>
+                               href="{{ url('noclick/schedules/dashboard') }}">
+                                Noclick schedules
+                            </a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link
+                        <li class="nav-item">
+                            <a class="nav-link
                             {{ (request()->is('noclick/commands') OR request()->is('noclick/commands/*')) ? 'active' : '' }}"
-                           href="{{ url('noclick/commands') }}">
-                            Noclick commands
-                        </a>
-                    </li>
+                               href="{{ url('noclick/commands') }}">
+                                Noclick commands
+                            </a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link
+                        <li class="nav-item">
+                            <a class="nav-link
                         {{ (request()->is('noclick/mail/templates') OR request()->is('noclick/mail/templates/*')) ? 'active' : '' }}"
-                           href="{{ url('noclick/mail/templates') }}">
-                            Noclick mail templates
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-        <!-- #Noclick -->
+                               href="{{ url('noclick/mail/templates') }}">
+                                Noclick mail templates
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- #Noclick -->
         @endif
 
         <!-- Setting -->
@@ -326,10 +326,10 @@
                            href="{{ url('setting/users') }}"> Users</a>
                     </li>
                     @if(Auth::user()->user_type != 2)
-                    <li class="nav-item">
-                        <a class="nav-link {{ (request()->is('setting/themes') OR request()->is('setting/themes/*')) ? 'active' : '' }}"
-                           href="{{ url('setting/themes') }}"> Themes</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ (request()->is('setting/themes') OR request()->is('setting/themes/*')) ? 'active' : '' }}"
+                               href="{{ url('setting/themes') }}"> Themes</a>
+                        </li>
                     @endif
                 </ul>
             </div>
