@@ -30,7 +30,6 @@ trait ScheduleProcessing
 
                 // Check if today matches the condition for monthly schedules
                 if($this->checkMonthlyScheduleDay()) {
-                    dump('in');
                     // Process monthly schedules
                     $this->processMonthlySchedules($schedule);
                 }
