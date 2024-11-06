@@ -2,7 +2,7 @@
 
 <div class="form-group row">
     <div class="col">
-        <!-- This is frequency options.  -->
+        <!-- Frequency options -->
         <label for="frequency">Frequency:<code>*</code></label>
         <select class="form-control" name="frequency" id="frequency">
             <option value="">--- Select frequency ---</option>
@@ -16,14 +16,14 @@
 
         @if ($errors->has('frequency'))
             <span class="error-message" role="alert">
-                {{ $errors->first('frequency') }}
-            </span>
+            {{ $errors->first('frequency') }}
+        </span>
         @endif
     </div>
 
     <div class="col">
         <label for="command_id">Command:<code>*</code></label>
-        <select class="form-control select2 " name="command_id" id="command_id">
+        <select class="form-control select2" name="command_id" id="command_id">
             <option value="">--- Select command ---</option>
             @foreach($commands as $data)
                 <option value="{{ $data->id }}"
@@ -58,47 +58,54 @@
         @endif
     </div>
 
-    <div class="col">
+    <div class="col" id="daysField" style="display: none;">
         <div class="form-group">
-
             <label for="days">Select days: (Optional) </label>
             <select id="days" name="days[]" class="js-example-basic-multiple" multiple="multiple" style="width:100%">
                 <option value="" disabled>--- Select days ---</option>
                 @foreach($dayNames as $dayName)
-                    <option value="{{ strtolower($dayName) }}" {{ in_array(strtolower($dayName), old('days', explode(',', $schedule->days))) ? 'selected' : '' }}>
+                    <option value="{{ strtolower($dayName) }}"
+                        {{ in_array(strtolower($dayName), old('days', explode(',', $schedule->days))) ? 'selected' : '' }}>
                         {{ $dayName }}
                     </option>
                 @endforeach
             </select>
             @if ($errors->has('days'))
                 <span class="error-message" role="alert">
-               {{ $errors->first('days') }}
+                {{ $errors->first('days') }}
             </span>
             @endif
         </div>
     </div>
 
-{{--    <div class="col">--}}
-{{--        <label for="holiday">Holidays: (Optional) </label>--}}
-{{--        <input--}}
-{{--            type="text"--}}
-{{--            class="form-control multi_date {{ $errors->has('holiday') ? ' has-error':'' }}"--}}
-{{--            name="holiday" id="holiday"--}}
-{{--            value="{{old('holiday') ?? $schedule->holiday}}"--}}
-{{--            placeholder="Holidays separated by commas.e.g: 14-Feb-2024"--}}
-{{--        >--}}
-{{--        @if ($errors->has('holiday'))--}}
-{{--            <span class="error-message" role="alert">--}}
-{{--               {{ $errors->first('holiday') }}--}}
-{{--            </span>--}}
-{{--        @endif--}}
+    <div class="col" id="dateField" style="display: none;">
+        <div class="form-group">
+            <label for="day_numeric_value">Select day number:</label>
+            <select class="form-control select2" name="day_numeric_value" id="day_numeric_value">
+                <option value="">--- Select day number---</option>
+                @for($i = 1; $i <= 31; $i++)
+                    <option value="{{$i}}" {{ (old('day_numeric_value') ?? $schedule->day_numeric_value) == $i ? 'Selected':''}} >
+                        {{$i}}
+                    </option>
+                @endfor
+            </select>
+            @if ($errors->has('day_numeric_value'))
+                <span class="error-message" role="alert">
+                    {{ $errors->first('day_numeric_value') }}
+                </span>
+            @endif
+        </div>
+    </div>
 
-{{--    </div>--}}
-
+    <div class="col" id="holidayLink" style="display: none;">
+        <div class="form-group">
+            <label for="set-holiday">Set holiday:</label>
+            <p class="mt-2"><a href="{{ url('noclick/schedules/2/list') }}" class="bg-inverse-success rounded p-2" target="_blank">Click here to set holiday</a></p>
+        </div>
+    </div>
 </div>
 
 <div class="form-group row">
-
     <div class="col-6">
         <label for="status">Status<code>*</code></label>
         <select class="form-control select2 " name="status" id="status">

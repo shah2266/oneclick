@@ -176,15 +176,12 @@ class UserController extends Controller
     //Unlink existing image
     protected function deletePreviousImage($id): bool
     {
-        $user = User::where('id', $id)
-                    ->where('user_type','!=', 0)
-                    ->first();
-        if($user) {
-            if(file_exists(public_path().'/assets/images/auth/'.$user->image)) {
-                unlink(public_path().'/assets/images/auth/'.$user->image);
-            }
-        }
+        $user = User::where('id', $id)->where('user_type','!=', 0)->first();
+        $path = public_path('/assets/images/auth/' . $user->image);
 
+        if(File::exists($path)) {
+            File::delete($path);
+        }
         return true;
     }
 

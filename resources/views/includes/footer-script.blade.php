@@ -26,6 +26,7 @@
 
 <script src="{{ asset('assets/js/ping.js') }}"></script>
 <script src="{{ asset('assets/js/holiday.js') }}"></script>
+<script src="{{ asset('assets/js/frequency.js') }}"></script>
 
 <script>
     $(document).ready(function() {
@@ -116,23 +117,7 @@
             }
         });
     }
-
-
-    // Start polling for updates when the page loads
-    // $(document).ready(function() {
-    //     // Start polling for updates when the page loads
-    //     // pollForUpdates();
-    //     //pollForUpdates("command", commandId, "commands");
-    //     //pollForUpdates("schedule", scheduleId, "schedules");
-    // });
-
 </script>
-
-{{--<script>--}}
-{{--    setInterval(function(){--}}
-{{--        window.location.href = "{{ route('cdr.status.testing') }}";--}}
-{{--    }, 300000); // 300000 milliseconds = 5 minutes--}}
-{{--</script>--}}
 
 
 

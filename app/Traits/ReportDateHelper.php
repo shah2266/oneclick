@@ -50,6 +50,7 @@ trait ReportDateHelper
      */
     public function setMonthlyReportDay(): bool
     {
+
         // Compare today's date with the date of the first English day name of the current month
         return Carbon::now()->format('d-M-Y') === Carbon::now()->firstOfMonth()->next(CarbonInterface::MONDAY)->format('d-M-Y');
     }

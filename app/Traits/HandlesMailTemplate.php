@@ -18,7 +18,7 @@ trait HandlesMailTemplate {
     {
         $app = $this->getActiveSetting();
         if(Str::lower($app->environment) === 'local') {
-            return ['demo@demo.com']; //Test email
+            return ['shah.alam@btraccl.com']; //Test email
         } else {
             return $this->trimExplodedString($template['to_email_addresses']);
         }
@@ -32,7 +32,7 @@ trait HandlesMailTemplate {
     {
         $app = $this->getActiveSetting();
         if(Str::lower($app->environment) === 'local') {
-            return ['demo@demo.com']; // Test email
+            return ['shaha2266@gmail.com']; // Test email
         } else {
             // Call the trimExplodedString function with the 'cc_email_addresses' value from the template
             return $this->trimExplodedString($template['cc_email_addresses']);

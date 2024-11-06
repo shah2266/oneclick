@@ -30,6 +30,7 @@ trait ScheduleProcessing
 
                 // Check if today matches the condition for monthly schedules
                 if($this->checkMonthlyScheduleDay()) {
+                    dump('in');
                     // Process monthly schedules
                     $this->processMonthlySchedules($schedule);
                 }
@@ -57,7 +58,6 @@ trait ScheduleProcessing
         if($manualDateSet === Carbon::yesterday()->format('d-M-Y')) {
             $schedule->command($command)->everyMinute(); // This is for testing
         }
-
 
         // Schedule the command using Laravel scheduler
         $schedule->command($command)->dailyAt($time);
@@ -129,22 +129,15 @@ trait ScheduleProcessing
      */
     protected function processMonthlySchedules($schedule)
     {
-        $noclickSchedule = $this->findFrequencyWiseCommand(1); // Frequency: 1, It is monthly value
+        $noclickSchedule = $this->findFrequencyWiseCommand(1); // Frequency: 1, monthly value
 
-        foreach ($noclickSchedule as $command) {
-            $scheduleDays = explode(',', $command->days);
-            foreach ($scheduleDays as $day) {
-                //$todayDate = '05-Feb-2024';
-                $todayDate = Carbon::now()->format('d-M-Y');
+        $todayDate = Carbon::now()->format('d-M-Y');
+        $dates = NoclickSchedule::createDate();
 
-                // Get the date of the first occurrence of the specified day of the current month
-                $firstDay = Carbon::now()->firstOfMonth()->next(Carbon::parse(ucfirst($day))->englishDayOfWeek)->format('d-M-Y');
-
-                if($todayDate === $firstDay) {
-                    $this->scheduleCommand($command, $schedule);
-                }
+        foreach ($noclickSchedule as $key=>$command) {
+            if($todayDate === $dates[$key]) {
+                $this->scheduleCommand($command, $schedule);
             }
-
         }
     }
 
@@ -154,7 +147,16 @@ trait ScheduleProcessing
      */
     protected function checkMonthlyScheduleDay(): bool
     {
-        return $this->setMonthlyReportDay();
+        $getFrequency = NoclickSchedule::frequencyOptions()[1];
+
+        $todayDate = Carbon::now()->format('d-M-Y');
+        $dates = NoclickSchedule::createDate();
+
+        if($getFrequency === 'Monthly' && in_array($todayDate, $dates)) {
+           return true;
+        }
+
+        return false;
     }
 
     /**

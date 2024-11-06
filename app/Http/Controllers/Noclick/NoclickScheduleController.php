@@ -158,6 +158,7 @@ class NoclickScheduleController extends Controller
             'holiday'           => 'nullable',
             'status'            => 'nullable',
             'user_id'           => 'required|numeric',
+            'day_numeric_value' => 'nullable|numeric',
         ]),function () {
 
             if(request()->isMethod('POST')) {

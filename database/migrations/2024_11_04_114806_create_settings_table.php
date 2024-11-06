@@ -28,6 +28,7 @@ class CreateSettingsTable extends Migration
             $table->text('description')->nullable();
             $table->string('copy_right_statement');
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }
