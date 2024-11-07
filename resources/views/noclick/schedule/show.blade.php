@@ -94,7 +94,12 @@
                                         @if($schedule->frequency == 0 || $schedule->frequency == 3)
                                             {{ $schedule->days }}
                                         @elseif($schedule->frequency == 1)
-                                            {{ $schedule->createDate()[$key] }}
+                                            <span class="text-success d-block mb-2">
+                                                [ Next run: <strong>{{ Carbon::createFromFormat('d-M-Y', $schedule->createDate()[$key])->addMonth()->format('d-M-Y') }}</strong> ]
+                                            </span>
+                                            <span class="text-gray d-block">
+                                                [ Last run: {{ $schedule->createDate()[$key] }} ]
+                                            </span>
                                         @else
                                             <span class="text-danger font-italic holiday-display" data-schedule-id="{{ $schedule->id }}">{{ $schedule->holiday }}</span>
                                         @endif
