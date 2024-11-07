@@ -71,6 +71,21 @@
             </div>
         @endforeach
 
+        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h4>
+                                   <a href="{{ route('schedules.create') }}" class="mb-0 font-weight-medium d-block text-behance" target="_blank">Create new schedule</a>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection

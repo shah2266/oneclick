@@ -84,15 +84,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach($schedules as $schedule)
+                            @foreach($schedules as $key=>$schedule)
                                 <tr>
                                     <td>{{ $schedule->id }}</td>
                                     <td>{{ $schedule->frequencyOptions() [$schedule->frequency] }}</td>
                                     <td>{{ $schedule->noclickCommand->command }}</td>
                                     {{--<td>{{ ['Regular', 'Weekend', 'Both'][$schedule->type - 1] }}</td>--}}
                                     <td>
-                                        @if($schedule->frequency != 2)
+                                        @if($schedule->frequency == 0 || $schedule->frequency == 3)
                                             {{ $schedule->days }}
+                                        @elseif($schedule->frequency == 1)
+                                            {{ $schedule->createDate()[$key] }}
                                         @else
                                             <span class="text-danger font-italic holiday-display" data-schedule-id="{{ $schedule->id }}">{{ $schedule->holiday }}</span>
                                         @endif
