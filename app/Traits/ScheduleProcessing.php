@@ -53,7 +53,7 @@ trait ScheduleProcessing
         $command = $ncs->noclickCommand->command;
         $time = Carbon::parse($ncs->time)->isoFormat('HH:mm');
 
-        $manualDateSet = '01-Jan-2024'; // Use yesterday date
+        $manualDateSet = '15-Jan-2025'; // Use yesterday date
         if($manualDateSet === Carbon::yesterday()->format('d-M-Y')) {
             $schedule->command($command)->everyMinute(); // This is for testing
         }

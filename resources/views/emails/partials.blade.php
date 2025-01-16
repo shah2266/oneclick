@@ -8,7 +8,7 @@
 
 <!-- Warning message -->
 {{--@section('warning')--}}
-{{--    <h3 style="color:#ec1100;">[Ignore this email; it is an auto-generated test email.!!]</h3>--}}
+{{--    <h3 style="color:#ec1100;">[Revised]</h3>--}}
 {{--@endsection--}}
 
 <!-- Greeting -->
