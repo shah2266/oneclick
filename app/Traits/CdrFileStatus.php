@@ -87,6 +87,7 @@ trait CdrFileStatus
             ->select('CDRFileSequenceNo', 'FileName', 'SwitchID')
             ->whereBetween('ImportStartDateTime', [$fromDate, $toDate])
             ->where('SwitchID', $switchId)
+            ->where('CDRFileStatus', 3)
             ->get()
             ->toArray();
     }
